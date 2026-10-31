@@ -1,0 +1,23 @@
+node_modules/
+dist/
+dev-dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/pushkar.db*
+backend/uploads/
+backend/.env
+.env
+.codegraph/
+
+# model weights (ultralytics downloads yolov8n.pt on first use)
+*.pt
+# local tool state
+.claude/
+.venv/
+venv/
+*.log
+.DS_Store
+Thumbs.db
+backend/.pytest_cache/
+frontend/test-results/

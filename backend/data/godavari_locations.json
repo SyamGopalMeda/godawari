@@ -1,0 +1,2498 @@
+{
+ "generated_at": "2026-10-31T12:19:42+00:00",
+ "generator": "backend/scripts/import_osm.py",
+ "license": "Location data © OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright)",
+ "notes": [
+  "Official 2027 ghat lists with locations have not been published (AP: about 440 ghats planned; Telangana: 67 centres, per The Hans India).",
+  "verification='source' = position from OpenStreetMap, not yet confirmed by the organisers; 'unverified' = named by a written source, no verified position.",
+  "Festival entry gates, festival parking zones, changing rooms, help desks and capacities are not included until officially published."
+ ],
+ "sources": [
+  "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram",
+  "https://www.thehansindia.com/news/cities/hyderabad/govt-gears-up-for-godavari-pushkaralu-with-67-ghats-rs-1000-cr-plan-1109771",
+  "https://www.openstreetmap.org"
+ ],
+ "centres": [
+  {
+   "code": "BASAR",
+   "name": "Basar",
+   "name_te": null,
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Nirmal",
+   "lat": 18.884584,
+   "lng": 77.95259,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/7131704214",
+   "osm_display_name": "Basar, Basar mandal, Nirmal, Telangana, 504101, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "SOAN",
+   "name": "Soan",
+   "name_te": null,
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Nirmal",
+   "lat": 19.009419,
+   "lng": 78.382107,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/245661245",
+   "osm_display_name": "Suvarnapuri, Soan mandal, Nirmal, Telangana, 504105, India",
+   "citations": [
+    "https://www.openstreetmap.org/node/4434889429"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "DHARMAPURI",
+   "name": "Dharmapuri",
+   "name_te": "ధర్మపురి",
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Jagtial",
+   "lat": 18.949276,
+   "lng": 79.095467,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/2070578539",
+   "osm_display_name": "Dharmapuri, Dharmapuri mandal, Jagtial, Telangana, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "KOTILINGALA",
+   "name": "Kotilingala",
+   "name_te": null,
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Jagtial",
+   "lat": 18.862128,
+   "lng": 79.197392,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/245652335",
+   "osm_display_name": "Kotilingala, Velgatur mandal, Jagtial, Telangana, 504215, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "MANTHANI",
+   "name": "Manthani",
+   "name_te": null,
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Peddapalli",
+   "lat": 18.651247,
+   "lng": 79.665771,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/245650056",
+   "osm_display_name": "Manthani, Manthani mandal, Peddapalli, Telangana, 505184, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "KALESHWARAM",
+   "name": "Kaleshwaram",
+   "name_te": "కాళేశ్వరం",
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Jayashankar Bhupalapally",
+   "lat": 18.811808,
+   "lng": 79.905341,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/3260269250",
+   "osm_display_name": "Kaleshwaram, Mahadevpur mandal, Jayashankar Bhupalapally, Telangana, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "BHADRACHALAM",
+   "name": "Bhadrachalam",
+   "name_te": "భద్రాచలం",
+   "name_hi": null,
+   "state": "Telangana",
+   "district": "Bhadradri Kothagudem",
+   "lat": 17.668802,
+   "lng": 80.894008,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/571122172",
+   "osm_display_name": "Bhadrachalam, Bhadradri Kothagudem, Telangana, 507111, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 3000
+  },
+  {
+   "code": "RAJAHMUNDRY",
+   "name": "Rajamahendravaram",
+   "name_te": "రాజమండ్రి",
+   "name_hi": "राजमहेंद्रवरम",
+   "state": "Andhra Pradesh",
+   "district": "East Godavari District",
+   "lat": 17.005045,
+   "lng": 81.780473,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/2408119848",
+   "osm_display_name": "Rajamahendravaram, Rajamahendravaram Urban Mandal, East Godavari District, Andhra Pradesh, 533100, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram",
+    "https://eastgodavari.ap.gov.in/?p=3621"
+   ],
+   "radius_m": 4500
+  },
+  {
+   "code": "KOVVUR",
+   "name": "Kovvur",
+   "name_te": "కొవ్వూరు",
+   "name_hi": "कोव्वूरु",
+   "state": "Andhra Pradesh",
+   "district": "East Godavari District",
+   "lat": 17.007531,
+   "lng": 81.727697,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/708920980",
+   "osm_display_name": "Kovvur, Kovvur Bypass, Kovvur Urban, Kovvur, Kovvur Mandal, East Godavari District, Andhra Pradesh, 534350, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "DOWLESWARAM",
+   "name": "Dowleswaram",
+   "name_te": null,
+   "name_hi": null,
+   "state": "Andhra Pradesh",
+   "district": "East Godavari District",
+   "lat": 16.950088,
+   "lng": 81.785515,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/7116293201",
+   "osm_display_name": "PHC,Dowleswaram, MDR0251, Dowleshwaram, Rajahmundry Rural Mandal, East Godavari District, Andhra Pradesh, 533125, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "NARASAPURAM",
+   "name": "Narasapuram",
+   "name_te": null,
+   "name_hi": null,
+   "state": "Andhra Pradesh",
+   "district": "West Godavari District",
+   "lat": 16.430116,
+   "lng": 81.685448,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/6751827876",
+   "osm_display_name": "Indian Red Cross Society Blood Bank- Narasapuram, NH216, Rustumbada, Narasapuram, West Godavari District, Andhra Pradesh, 534275, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  },
+  {
+   "code": "ANTARVEDI",
+   "name": "Antarvedi",
+   "name_te": "అంతర్వేది",
+   "name_hi": null,
+   "state": "Andhra Pradesh",
+   "district": "Dr. B.R. Ambedkar Konaseema District",
+   "lat": 16.332807,
+   "lng": 81.734778,
+   "source": "OpenStreetMap (Nominatim)",
+   "source_ref": "https://www.openstreetmap.org/node/5478103982",
+   "osm_display_name": "Antarvedi, Sakhinetipalle Mandal, Dr. B.R. Ambedkar Konaseema District, Andhra Pradesh, India",
+   "citations": [
+    "https://en.wikipedia.org/wiki/Godavari_Maha_Pushkaram"
+   ],
+   "radius_m": 2500
+  }
+ ],
+ "locations": [
+  {
+   "code": "MEDICAL-BASAR-N6830204318",
+   "centre": "BASAR",
+   "type": "medical",
+   "name": "Shifa Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.882769,
+   "lng": 77.953925,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6830204318",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-BASAR-N6544209057",
+   "centre": "BASAR",
+   "type": "medical",
+   "name": "Government Homoeo Dispensary, Basar (Regular)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.88196,
+   "lng": 77.953109,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6544209057",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-BASAR-N6830204310",
+   "centre": "BASAR",
+   "type": "medical",
+   "name": "Sri Saraswathi Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.886511,
+   "lng": 77.950404,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6830204310",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-BASAR-N6830204317",
+   "centre": "BASAR",
+   "type": "medical",
+   "name": "Shifa Clinic, Galli",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.877691,
+   "lng": 77.956345,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6830204317",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-BASAR-N6830204321",
+   "centre": "BASAR",
+   "type": "medical",
+   "name": "RGUKT Basar Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.879649,
+   "lng": 77.92494,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6830204321",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-BASAR-N2962234388",
+   "centre": "BASAR",
+   "type": "railway_station",
+   "name": "Basar",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.86579,
+   "lng": 77.93886,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/2962234388",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "SCR",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "GHAT-SOAN-N4434889429",
+   "centre": "SOAN",
+   "type": "ghat",
+   "name": "Pushkar Ghat",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 19.001852,
+   "lng": 78.382687,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/4434889429",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "details": {
+    "tourism": "attraction"
+   }
+  },
+  {
+   "code": "MEDICAL-SOAN-N11937542117",
+   "centre": "SOAN",
+   "type": "medical",
+   "name": "Primary Health Centre, Soan",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 19.008673,
+   "lng": 78.382799,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/11937542117",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "healthcare": "clinic",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-SOAN-N11931101989",
+   "centre": "SOAN",
+   "type": "medical",
+   "name": "Government Ayurvedic Dispensary, Soan (NRHM)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 19.01238,
+   "lng": 78.384394,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/11931101989",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-SOAN-N3532688237",
+   "centre": "SOAN",
+   "type": "medical",
+   "name": "church",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 19.007446,
+   "lng": 78.366935,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3532688237",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DHARMAPURI-N10977235529",
+   "centre": "DHARMAPURI",
+   "type": "medical",
+   "name": "Government Unani Dispensary, Dharmapuri (Regular)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.94659,
+   "lng": 79.099676,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10977235529",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-DHARMAPURI-N6548910912",
+   "centre": "DHARMAPURI",
+   "type": "medical",
+   "name": "Primary Health Centre, Dharmapuri",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.944639,
+   "lng": 79.101168,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6548910912",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "POLICE-DHARMAPURI-N6817214285",
+   "centre": "DHARMAPURI",
+   "type": "police",
+   "name": "Police Station",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.947264,
+   "lng": 79.092174,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6817214285",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "BUS_STOP-DHARMAPURI-N6817214185",
+   "centre": "DHARMAPURI",
+   "type": "bus_stop",
+   "name": "Dharmapuri Bus Station",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.947356,
+   "lng": 79.094815,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6817214185",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "MEDICAL-KOTILINGALA-N6545078320",
+   "centre": "KOTILINGALA",
+   "type": "medical",
+   "name": "Government Ayurvedic Dispensary, Luxettipet (NRHM)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.887626,
+   "lng": 79.204781,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6545078320",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-KOTILINGALA-N6549083030",
+   "centre": "KOTILINGALA",
+   "type": "medical",
+   "name": "Government Unani Dispensary, Velgatur (NRHM)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.839676,
+   "lng": 79.17756,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6549083030",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-KOTILINGALA-N11930488464",
+   "centre": "KOTILINGALA",
+   "type": "medical",
+   "name": "Primary Health Centre, Velgatur",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.845744,
+   "lng": 79.170373,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/11930488464",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "healthcare": "clinic",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-KOTILINGALA-N6853248952",
+   "centre": "KOTILINGALA",
+   "type": "medical",
+   "name": "Kavitha Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.891699,
+   "lng": 79.205967,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6853248952",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-KOTILINGALA-N6853248953",
+   "centre": "KOTILINGALA",
+   "type": "medical",
+   "name": "Mounika Children's Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.892104,
+   "lng": 79.206562,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6853248953",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6853248962",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Aditya Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.650115,
+   "lng": 79.66475,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6853248962",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6554927857",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Community Health Centre Manthani",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.650877,
+   "lng": 79.668063,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6554927857",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6853248961",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Sri Sai Pushpa Dental Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.650326,
+   "lng": 79.667977,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6853248961",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6853248960",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Laxmi Nagar Ct Scan Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.652178,
+   "lng": 79.668129,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6853248960",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6830428578",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Government Hospital,Manthani",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.64995,
+   "lng": 79.66334,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6830428578",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6548100690",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Government Ayurvedic Dispensary, Manthani (NRHM)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.649839,
+   "lng": 79.663291,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6548100690",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6853248959",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Star Children Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.655241,
+   "lng": 79.668732,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6853248959",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "operator:type": "private"
+   }
+  },
+  {
+   "code": "MEDICAL-MANTHANI-N6830428588",
+   "centre": "MANTHANI",
+   "type": "medical",
+   "name": "Balaji hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.64388,
+   "lng": 79.66308,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6830428588",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "BUS_STOP-MANTHANI-N13713900805",
+   "centre": "MANTHANI",
+   "type": "bus_stop",
+   "name": "TGSRTC Bus Station , Manthani",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 18.651397,
+   "lng": 79.66775,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/13713900805",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6537396147",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Medi Life Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.671145,
+   "lng": 80.893194,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6537396147",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6526945167",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Samatha Nursing Home",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.671271,
+   "lng": 80.892921,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6526945167",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N11936481179",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Government Unani Dispensary, Bhadrachalam (Regular)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.666257,
+   "lng": 80.892379,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/11936481179",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6546958474",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Government Homoeo Dispensary, Bhadrachalam (Regular)",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.665955,
+   "lng": 80.89295,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6546958474",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6531483294",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Jayabharathi Multi Speciality Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.67168,
+   "lng": 80.893036,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6531483294",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "08743-233713"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-W828916735",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Bhadrachalam area hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.666111,
+   "lng": 80.892346,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/828916735",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "8743231828"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N10994525946",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Area Hospital, Bhadrachalam",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.666312,
+   "lng": 80.891576,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10994525946",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "operator:type": "government"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6527757094",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Swathi Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.671013,
+   "lng": 80.889917,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6527757094",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6531393185",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Sri Srinivasa Nursing Home",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.671202,
+   "lng": 80.889664,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6531393185",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-BHADRACHALAM-N6536121472",
+   "centre": "BHADRACHALAM",
+   "type": "medical",
+   "name": "Ayushi Nursing Home",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.67066,
+   "lng": 80.887958,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6536121472",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "9705064870"
+   }
+  },
+  {
+   "code": "POLICE-BHADRACHALAM-W1069926167",
+   "centre": "BHADRACHALAM",
+   "type": "police",
+   "name": "Police station",
+   "name_te": "పోలీస్ స్టేషన్",
+   "name_hi": "पुलिस स्टेशन",
+   "lat": 17.670383,
+   "lng": 80.884839,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1069926167",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "POLICE-BHADRACHALAM-W1569091554",
+   "centre": "BHADRACHALAM",
+   "type": "police",
+   "name": "Yetapaka Police Station",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.696098,
+   "lng": 80.909565,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1569091554",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "POLICE-BHADRACHALAM-W1569091551",
+   "centre": "BHADRACHALAM",
+   "type": "police",
+   "name": "CRPF 212 BN",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.697015,
+   "lng": 80.91112,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1569091551",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "PARKING-BHADRACHALAM-N9819836261",
+   "centre": "BHADRACHALAM",
+   "type": "parking",
+   "name": "Public parking",
+   "name_te": "పబ్లిక్ పార్కింగ్",
+   "name_hi": "सार्वजनिक पार्किंग",
+   "lat": 17.675187,
+   "lng": 80.885005,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/9819836261",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "parking"
+   }
+  },
+  {
+   "code": "BUS_STOP-BHADRACHALAM-N13707192986",
+   "centre": "BHADRACHALAM",
+   "type": "bus_stop",
+   "name": "TGSRTC Bus Station , Bhadrachalam",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.671273,
+   "lng": 80.890665,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/13707192986",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-BHADRACHALAM-N11245043169",
+   "centre": "BHADRACHALAM",
+   "type": "bus_stop",
+   "name": "TGSRTC Bus Station , Bhadrachalam",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.671753,
+   "lng": 80.890774,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/11245043169",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "GHAT-RAJAHMUNDRY-N4115259593",
+   "centre": "RAJAHMUNDRY",
+   "type": "ghat",
+   "name": "Pushkar Ghat",
+   "name_te": "పుష్కర ఘాట్",
+   "name_hi": null,
+   "lat": 17.008396,
+   "lng": 81.766947,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/4115259593",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "details": {
+    "tourism": "attraction"
+   }
+  },
+  {
+   "code": "GHAT-RAJAHMUNDRY-N4620578091",
+   "centre": "RAJAHMUNDRY",
+   "type": "ghat",
+   "name": "Saraswathi Ghat",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.994831,
+   "lng": 81.770871,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/4620578091",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "details": {
+    "tourism": "attraction"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334715",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Municipal Corporation Dispensary",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.004978,
+   "lng": 81.780306,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334715",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N6792329464",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Sri Suguna Childrens Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005317,
+   "lng": 81.780438,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6792329464",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "2446957"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334713",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Pragati Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.004536,
+   "lng": 81.781072,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334713",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334725",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Sri Hari Skin Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005542,
+   "lng": 81.781204,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334725",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "phone": "0883-2424252"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076341633",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Pradeep Diabatis Centre",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.00589,
+   "lng": 81.780305,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076341633",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "0883-2465165"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334720",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Sri Vishnu Physiotherapy & Pain Relilf Centre",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005944,
+   "lng": 81.780013,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334720",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "9885482652"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334724",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Suguna Children Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005503,
+   "lng": 81.78143,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334724",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334721",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Rajyalakshmi Nursing Home",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005266,
+   "lng": 81.781588,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334721",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076334730",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Dr. A. Krishna Kumari",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005774,
+   "lng": 81.781383,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076334730",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "phone": "0883-2471347"
+   }
+  },
+  {
+   "code": "MEDICAL-RAJAHMUNDRY-N3076348595",
+   "centre": "RAJAHMUNDRY",
+   "type": "medical",
+   "name": "Hiranyagarbha Audio Dignostics",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005482,
+   "lng": 81.781749,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076348595",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "POLICE-RAJAHMUNDRY-N3076402991",
+   "centre": "RAJAHMUNDRY",
+   "type": "police",
+   "name": "City Traffic Police Station & Circle Office",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.00571,
+   "lng": 81.778824,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076402991",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police",
+    "phone": "0883-2442953, 2468050"
+   }
+  },
+  {
+   "code": "POLICE-RAJAHMUNDRY-N3076402992",
+   "centre": "RAJAHMUNDRY",
+   "type": "police",
+   "name": "III Town Central Crime Station",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.005758,
+   "lng": 81.778566,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076402992",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police",
+    "phone": "0883-2468050"
+   }
+  },
+  {
+   "code": "POLICE-RAJAHMUNDRY-N13335581075",
+   "centre": "RAJAHMUNDRY",
+   "type": "police",
+   "name": "Police station",
+   "name_te": "పోలీస్ స్టేషన్",
+   "name_hi": "पुलिस स्टेशन",
+   "lat": 17.00733,
+   "lng": 81.778901,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/13335581075",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "POLICE-RAJAHMUNDRY-W1469440647",
+   "centre": "RAJAHMUNDRY",
+   "type": "police",
+   "name": "Police station",
+   "name_te": "పోలీస్ స్టేషన్",
+   "name_hi": "पुलिस स्टेशन",
+   "lat": 17.00692,
+   "lng": 81.778331,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1469440647",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "POLICE-RAJAHMUNDRY-W1454103872",
+   "centre": "RAJAHMUNDRY",
+   "type": "police",
+   "name": "Police Quaters",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.007155,
+   "lng": 81.777622,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1454103872",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "POLICE-RAJAHMUNDRY-N3076402993",
+   "centre": "RAJAHMUNDRY",
+   "type": "police",
+   "name": "Prakasham Nagar Police Station",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.007009,
+   "lng": 81.787964,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076402993",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "RESTROOM-RAJAHMUNDRY-N12252237505",
+   "centre": "RAJAHMUNDRY",
+   "type": "restroom",
+   "name": "Public toilets",
+   "name_te": "పబ్లిక్ మరుగుదొడ్లు",
+   "name_hi": "सार्वजनिक शौचालय",
+   "lat": 16.996275,
+   "lng": 81.774335,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/12252237505",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "toilets"
+   }
+  },
+  {
+   "code": "PARKING-RAJAHMUNDRY-N13179762179",
+   "centre": "RAJAHMUNDRY",
+   "type": "parking",
+   "name": "Public parking",
+   "name_te": "పబ్లిక్ పార్కింగ్",
+   "name_hi": "सार्वजनिक पार्किंग",
+   "lat": 16.999578,
+   "lng": 81.789118,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/13179762179",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "parking"
+   }
+  },
+  {
+   "code": "PARKING-RAJAHMUNDRY-W1286938359",
+   "centre": "RAJAHMUNDRY",
+   "type": "parking",
+   "name": "Public parking",
+   "name_te": "పబ్లిక్ పార్కింగ్",
+   "name_hi": "सार्वजनिक पार्किंग",
+   "lat": 17.024422,
+   "lng": 81.798728,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1286938359",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "parking"
+   }
+  },
+  {
+   "code": "BUS_STOP-RAJAHMUNDRY-N3076349902",
+   "centre": "RAJAHMUNDRY",
+   "type": "bus_stop",
+   "name": "Medapati Sitarama Reddy Hi-tech Bus Shelter , Kambalacheruvu , Rajahmundry",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.012419,
+   "lng": 81.780374,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076349902",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-RAJAHMUNDRY-N11775749932",
+   "centre": "RAJAHMUNDRY",
+   "type": "bus_stop",
+   "name": "APSRTC Bus Stand Parking Area , Rajamahendravaram",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.002339,
+   "lng": 81.789852,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/11775749932",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-RAJAHMUNDRY-N10833934166",
+   "centre": "RAJAHMUNDRY",
+   "type": "bus_stop",
+   "name": "Gokavaram Bus Stand , Rajamahendravaram",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.009906,
+   "lng": 81.772046,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10833934166",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-RAJAHMUNDRY-W1324547179",
+   "centre": "RAJAHMUNDRY",
+   "type": "bus_stop",
+   "name": "Bus station",
+   "name_te": "బస్ స్టేషన్",
+   "name_hi": "बस स्टेशन",
+   "lat": 17.000878,
+   "lng": 81.789515,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1324547179",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-RAJAHMUNDRY-N7795401568",
+   "centre": "RAJAHMUNDRY",
+   "type": "railway_station",
+   "name": "Godavari",
+   "name_te": "గోదావరి",
+   "name_hi": "गोदावरी",
+   "lat": 17.007002,
+   "lng": 81.771347,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7795401568",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "SCR",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-RAJAHMUNDRY-N1128723515",
+   "centre": "RAJAHMUNDRY",
+   "type": "railway_station",
+   "name": "Rajahmundry",
+   "name_te": "రాజమండ్రి",
+   "name_hi": "राजमंड्री",
+   "lat": 16.984043,
+   "lng": 81.783958,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/1128723515",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-RAJAHMUNDRY-N708920980",
+   "centre": "RAJAHMUNDRY",
+   "type": "railway_station",
+   "name": "Kovvur",
+   "name_te": "కొవ్వూరు",
+   "name_hi": "कोव्वूरु",
+   "lat": 17.007531,
+   "lng": 81.727697,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/708920980",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668616",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "J.M. Sai Gayatri Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.01284,
+   "lng": 81.728152,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668616",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668604",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Goverment Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.015076,
+   "lng": 81.73358,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668604",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668554",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Dr. Kota Papa Rao Memorial Homeo Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.016916,
+   "lng": 81.731913,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668554",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668620",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Jaaya Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.016796,
+   "lng": 81.732349,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668620",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668610",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Sri Sai Bhavani Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.017809,
+   "lng": 81.729066,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668610",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668564",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Sri Krishna Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.016771,
+   "lng": 81.73306,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668564",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668589",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Sri Sivasai Nursing Home",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.016928,
+   "lng": 81.7328,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668589",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668574",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Unani Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.01757,
+   "lng": 81.732568,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668574",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668623",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Sri Sai Dental Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.021228,
+   "lng": 81.728169,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668623",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-KOVVUR-N7791668571",
+   "centre": "KOVVUR",
+   "type": "medical",
+   "name": "Sravanthi Multi Speciality Dental Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.021316,
+   "lng": 81.728211,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7791668571",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "POLICE-KOVVUR-W585314494",
+   "centre": "KOVVUR",
+   "type": "police",
+   "name": "Police station",
+   "name_te": "పోలీస్ స్టేషన్",
+   "name_hi": "पुलिस स्टेशन",
+   "lat": 17.016824,
+   "lng": 81.733561,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/585314494",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "police"
+   }
+  },
+  {
+   "code": "PARKING-KOVVUR-W678579981",
+   "centre": "KOVVUR",
+   "type": "parking",
+   "name": "Public parking",
+   "name_te": "పబ్లిక్ పార్కింగ్",
+   "name_hi": "सार्वजनिक पार्किंग",
+   "lat": 17.025746,
+   "lng": 81.710823,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/678579981",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "parking"
+   }
+  },
+  {
+   "code": "BUS_STOP-KOVVUR-N10834383324",
+   "centre": "KOVVUR",
+   "type": "bus_stop",
+   "name": "APSRTC Bus Station , Kovvur",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.01779,
+   "lng": 81.726543,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10834383324",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-KOVVUR-N6334934136",
+   "centre": "KOVVUR",
+   "type": "bus_stop",
+   "name": "Bus station",
+   "name_te": "బస్ స్టేషన్",
+   "name_hi": "बस स्टेशन",
+   "lat": 17.027275,
+   "lng": 81.689114,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6334934136",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-KOVVUR-N10833934166",
+   "centre": "KOVVUR",
+   "type": "bus_stop",
+   "name": "Gokavaram Bus Stand , Rajamahendravaram",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.009906,
+   "lng": 81.772046,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10833934166",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-KOVVUR-N6334934137",
+   "centre": "KOVVUR",
+   "type": "bus_stop",
+   "name": "Bus station",
+   "name_te": "బస్ స్టేషన్",
+   "name_hi": "बस स्टेशन",
+   "lat": 17.026257,
+   "lng": 81.68658,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6334934137",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-KOVVUR-N708920980",
+   "centre": "KOVVUR",
+   "type": "railway_station",
+   "name": "Kovvur",
+   "name_te": "కొవ్వూరు",
+   "name_hi": "कोव्वूरु",
+   "lat": 17.007531,
+   "lng": 81.727697,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/708920980",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-KOVVUR-N7795401568",
+   "centre": "KOVVUR",
+   "type": "railway_station",
+   "name": "Godavari",
+   "name_te": "గోదావరి",
+   "name_hi": "गोदावरी",
+   "lat": 17.007002,
+   "lng": 81.771347,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7795401568",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "SCR",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-KOVVUR-N2523591659",
+   "centre": "KOVVUR",
+   "type": "railway_station",
+   "name": "Chagallu",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.971227,
+   "lng": 81.690954,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/2523591659",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661706",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "CEM Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.950878,
+   "lng": 81.786772,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661706",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661668",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Mallika Dental Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.948805,
+   "lng": 81.781623,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661668",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661661",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Santharam Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.957479,
+   "lng": 81.783706,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661661",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661650",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Sri Datta Ayurvedic Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.947123,
+   "lng": 81.777769,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661650",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661696",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Puskara Mata Di Rehabitation Centre",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.963401,
+   "lng": 81.784983,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661696",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661690",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Gouthami Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.929254,
+   "lng": 81.794287,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661690",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661705",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Amma Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.975176,
+   "lng": 81.786971,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661705",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N3076348563",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Y.s.rajasekhar Reddy Clnic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.97531,
+   "lng": 81.787431,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076348563",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "healthcare": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661652",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Aditya Multi Specialty Ayurvedic Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.976778,
+   "lng": 81.783623,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661652",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-DOWLESWARAM-N7790661672",
+   "centre": "DOWLESWARAM",
+   "type": "medical",
+   "name": "Sri Sai Clinic And Diagnostics",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.977159,
+   "lng": 81.784557,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7790661672",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic"
+   }
+  },
+  {
+   "code": "BUS_STOP-DOWLESWARAM-N3076349893",
+   "centre": "DOWLESWARAM",
+   "type": "bus_stop",
+   "name": "Kotipalli Bus Stand",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.993619,
+   "lng": 81.776287,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/3076349893",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-DOWLESWARAM-N2012816717",
+   "centre": "DOWLESWARAM",
+   "type": "bus_stop",
+   "name": "Kotipalli Bus Stand",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.993679,
+   "lng": 81.775772,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/2012816717",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-DOWLESWARAM-W1324547179",
+   "centre": "DOWLESWARAM",
+   "type": "bus_stop",
+   "name": "Bus station",
+   "name_te": "బస్ స్టేషన్",
+   "name_hi": "बस स्टेशन",
+   "lat": 17.000878,
+   "lng": 81.789515,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/way/1324547179",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-DOWLESWARAM-N10833934147",
+   "centre": "DOWLESWARAM",
+   "type": "bus_stop",
+   "name": "APSRTC Bus Station , Rajamahendravaram",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 17.001237,
+   "lng": 81.789745,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10833934147",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-DOWLESWARAM-N1128723515",
+   "centre": "DOWLESWARAM",
+   "type": "railway_station",
+   "name": "Rajahmundry",
+   "name_te": "రాజమండ్రి",
+   "name_hi": "राजमंड्री",
+   "lat": 16.984043,
+   "lng": 81.783958,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/1128723515",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-DOWLESWARAM-N987476686",
+   "centre": "DOWLESWARAM",
+   "type": "railway_station",
+   "name": "Kadiyam",
+   "name_te": "కడియం",
+   "name_hi": "कङियम",
+   "lat": 16.913805,
+   "lng": 81.831816,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/987476686",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-DOWLESWARAM-N7795401568",
+   "centre": "DOWLESWARAM",
+   "type": "railway_station",
+   "name": "Godavari",
+   "name_te": "గోదావరి",
+   "name_hi": "गोदावरी",
+   "lat": 17.007002,
+   "lng": 81.771347,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7795401568",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "SCR",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N8791543685",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Government Hospital, Narsapur",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.430509,
+   "lng": 81.685668,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/8791543685",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049114",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Divya Children Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.430812,
+   "lng": 81.684584,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049114",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049049",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Ratna Homoeo Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.430924,
+   "lng": 81.686638,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049049",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "healthcare": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N6776314124",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Narsapur Christian Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.435776,
+   "lng": 81.690427,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/6776314124",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049110",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Sudha Homeo Clinic",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.432756,
+   "lng": 81.693715,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049110",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "clinic",
+    "healthcare": "clinic"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049117",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Kishore ENT Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.435427,
+   "lng": 81.694265,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049117",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049068",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Sri Surya Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.433001,
+   "lng": 81.695915,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049068",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049107",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Chaitanya Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.436527,
+   "lng": 81.697451,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049107",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049082",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Leprosy Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.429248,
+   "lng": 81.671698,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049082",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "MEDICAL-NARASAPURAM-N7793049103",
+   "centre": "NARASAPURAM",
+   "type": "medical",
+   "name": "Ganesh Hospital",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.435361,
+   "lng": 81.699124,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/7793049103",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "hospital",
+    "healthcare": "hospital"
+   }
+  },
+  {
+   "code": "BUS_STOP-NARASAPURAM-N10833869585",
+   "centre": "NARASAPURAM",
+   "type": "bus_stop",
+   "name": "APSRTC Bus Station , Narasapuram",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.440129,
+   "lng": 81.701809,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/10833869585",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "RAILWAY_STATION-NARASAPURAM-N726285052",
+   "centre": "NARASAPURAM",
+   "type": "railway_station",
+   "name": "Narasapur",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.444191,
+   "lng": 81.699788,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/726285052",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "operator": "Indian Railways",
+    "railway": "station"
+   }
+  },
+  {
+   "code": "BUS_STOP-ANTARVEDI-N12034992863",
+   "centre": "ANTARVEDI",
+   "type": "bus_stop",
+   "name": "Antarvedi Bus Stop",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.333542,
+   "lng": 81.733628,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/12034992863",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "BUS_STOP-ANTARVEDI-N12034992857",
+   "centre": "ANTARVEDI",
+   "type": "bus_stop",
+   "name": "Rambhag Bus Stop",
+   "name_te": null,
+   "name_hi": null,
+   "lat": 16.331457,
+   "lng": 81.741385,
+   "verification": "source",
+   "source": "OpenStreetMap",
+   "source_ref": "https://www.openstreetmap.org/node/12034992857",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "is_accessible": false,
+   "details": {
+    "amenity": "bus_station"
+   }
+  },
+  {
+   "code": "GHAT-RJY-KOTILINGALA",
+   "centre": "RAJAHMUNDRY",
+   "type": "ghat",
+   "name": "Kotilingala Ghat",
+   "name_te": "కోటిలింగాల ఘాట్",
+   "name_hi": "कोटिलिंगाला घाट",
+   "lat": null,
+   "lng": null,
+   "verification": "unverified",
+   "source": "Deccan Chronicle, 23 May 2015",
+   "source_ref": "https://www.deccanchronicle.com/150523/nation-current-affairs/article/temples-be-spruced",
+   "retrieved_at": "2026-10-31T12:19:42+00:00",
+   "details": {}
+  }
+ ]
+}

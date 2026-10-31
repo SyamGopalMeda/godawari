@@ -1,0 +1,49 @@
+# Pilot-site deployment: PostgreSQL + API + static PWA behind Nginx.
+# `docker compose up --build` then open http://localhost:8080
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pushkar
+      POSTGRES_PASSWORD: pushkar
+      POSTGRES_DB: pushkar
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pushkar"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      PUSHKAR_DATABASE_URL: postgresql+psycopg://pushkar:pushkar@db:5432/pushkar
+      PUSHKAR_DEV_MODE: "true"            # set false in production (OTP only via SMS gateway)
+      PUSHKAR_JWT_SECRET: ${PUSHKAR_JWT_SECRET:-replace-with-a-long-random-secret-0123456789abcdef}
+      PUSHKAR_CORS_ORIGINS: '["http://localhost:8080","http://localhost:5173"]'
+      PUSHKAR_SEED_ON_START: "true"
+      PUSHKAR_SEED_MODE: real              # verified dataset (data/godavari_locations.json); "demo" = synthetic test data
+      PUSHKAR_UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request;urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  uploads:

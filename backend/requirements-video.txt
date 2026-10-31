@@ -1,0 +1,5 @@
+# Optional: video / camera crowd counting (CPU works; CUDA strongly recommended)
+ultralytics>=8.3
+opencv-python-headless>=4.9
+torch>=2.2
+imageio-ffmpeg>=0.5  # bundled ffmpeg binary for the annotated tracking video (system ffmpeg on PATH is used first)

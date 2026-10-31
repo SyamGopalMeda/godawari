@@ -1,0 +1,439 @@
+[
+  {
+    "lang": "te",
+    "route": "welcome",
+    "path": "/welcome",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "home",
+    "path": "/",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "explore",
+    "path": "/map",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "route",
+    "path": "/map?to=3",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "crowd",
+    "path": "/crowd",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "parking",
+    "path": "/parking",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "services",
+    "path": "/services",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "facilities",
+    "path": "/facilities?type=restroom,water",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "family",
+    "path": "/family",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "missing",
+    "path": "/missing",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "missing-member",
+    "path": "/missing?member=7",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "emergency",
+    "path": "/emergency",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "alerts",
+    "path": "/alerts",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "profile",
+    "path": "/profile",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "login",
+    "path": "/login",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "te",
+    "route": "home-guest-nolocation",
+    "path": "/",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "welcome",
+    "path": "/welcome",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "home",
+    "path": "/",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "explore",
+    "path": "/map",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "route",
+    "path": "/map?to=3",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "crowd",
+    "path": "/crowd",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "parking",
+    "path": "/parking",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "services",
+    "path": "/services",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "facilities",
+    "path": "/facilities?type=restroom,water",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "family",
+    "path": "/family",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "missing",
+    "path": "/missing",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "missing-member",
+    "path": "/missing?member=7",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "emergency",
+    "path": "/emergency",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "alerts",
+    "path": "/alerts",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "profile",
+    "path": "/profile",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "login",
+    "path": "/login",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "hi",
+    "route": "home-guest-nolocation",
+    "path": "/",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "welcome",
+    "path": "/welcome",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "home",
+    "path": "/",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "explore",
+    "path": "/map",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "route",
+    "path": "/map?to=3",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "crowd",
+    "path": "/crowd",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "parking",
+    "path": "/parking",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "services",
+    "path": "/services",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "facilities",
+    "path": "/facilities?type=restroom,water",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "family",
+    "path": "/family",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "missing",
+    "path": "/missing",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "missing-member",
+    "path": "/missing?member=7",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "emergency",
+    "path": "/emergency",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "alerts",
+    "path": "/alerts",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "profile",
+    "path": "/profile",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "login",
+    "path": "/login",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "home-guest-nolocation",
+    "path": "/",
+    "overflowX": 0,
+    "wide": [],
+    "smallTargets": [],
+    "errors": []
+  },
+  {
+    "lang": "en",
+    "route": "offline",
+    "banner": 1
+  }
+]
