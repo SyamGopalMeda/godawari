@@ -9,6 +9,8 @@ import { API_BASE } from './setup'
 let apiUp = false
 beforeAll(async () => {
   try { apiUp = (await fetch(API_BASE + '/health')).ok } catch { apiUp = false }
+  const allowSkip = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.PUSHKAR_ALLOW_SKIP === '1'
+  if (!apiUp && !allowSkip) throw new Error(`Backend not reachable at ${API_BASE}. Start a demo-seeded API and set PUSHKAR_API_BASE (or PUSHKAR_ALLOW_SKIP=1 to skip the page tests).`)
   if (!apiUp) console.warn(`Backend not reachable at ${API_BASE}; page tests will be skipped`)
 })
 
@@ -36,7 +38,7 @@ const publicRoutes: [string, RegExp][] = [
   ['/emergency', /112/],
   ['/alerts', /గేట్ B|స్వాగతం/],                 // seeded welcome alert
   ['/profile', /ప్రొఫైల్/],
-  ['/login', /OTP/],
+  ['/login', /పాస్‌వర్డ్/],                     // sign in with mobile number + password
   ['/missing', /తప్పిపోయిన/],
   ['/admin/login', /admin/i],
 ]
@@ -194,5 +196,41 @@ describe('staff and admin', () => {
     await loginPilgrim(freshPhone())
     at('/admin')
     await waitFor(() => expect(window.location.pathname).toBe('/admin/login'), T)
+  })
+})
+
+describe('sign-in with password', () => {
+  it('creates an account, then resets a forgotten password with the on-screen demo OTP', async () => {
+    if (!apiUp) return
+    localStorage.clear()
+    localStorage.setItem('ps.lang', 'en')
+    localStorage.setItem('ps.onboarded', '1')
+    const ten = '9' + String(Date.now()).slice(-9)
+    // create account
+    const reg = at('/login?mode=register')
+    fireEvent.change(await screen.findByLabelText(/mobile|phone/i, {}, T), { target: { value: ten } })
+    fireEvent.change(screen.getByLabelText(/^Password$/), { target: { value: 'Godavari2027' } })
+    fireEvent.change(screen.getByLabelText(/Confirm password/i), { target: { value: 'Godavari2027' } })
+    fireEvent.click(screen.getByRole('button', { name: /send otp/i }))
+    const otp1 = (await screen.findByText(/^\d{6}$/, {}, T)).textContent!
+    fireEvent.change(screen.getByLabelText(/enter otp/i), { target: { value: otp1 } })
+    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
+    await waitFor(() => expect(localStorage.getItem('ps.token')).toBeTruthy(), T)
+    reg.unmount()
+    localStorage.removeItem('ps.token')
+    // forgot password
+    const fp = at('/login?mode=forgot')
+    fireEvent.change(await screen.findByLabelText(/mobile|phone/i, {}, T), { target: { value: ten } })
+    fireEvent.click(screen.getByRole('button', { name: /send otp/i }))
+    const otp2 = (await screen.findByText(/^\d{6}$/, {}, T)).textContent!
+    fireEvent.change(screen.getByLabelText(/enter otp/i), { target: { value: otp2 } })
+    fireEvent.change(screen.getByLabelText(/^New password$/), { target: { value: 'NewPass2027' } })
+    fireEvent.change(screen.getByLabelText(/Confirm password/i), { target: { value: 'NewPass2027' } })
+    fireEvent.click(screen.getByRole('button', { name: /set password and sign in/i }))
+    await waitFor(() => expect(localStorage.getItem('ps.token')).toBeTruthy(), T)
+    fp.unmount()
+    // the new password works through the API
+    const r = await fetch(API_BASE + '/api/v1/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: ten, password: 'NewPass2027' }) })
+    expect(r.status).toBe(200)
   })
 })

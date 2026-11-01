@@ -55,6 +55,14 @@ docker compose up --build
 # → http://localhost:8080  (API docs at /docs)
 ```
 
+## Sign-in and Firebase
+
+- **Pilgrims** create an account with mobile number, name and password; the number is confirmed with a one-time code (OTP). They sign in with mobile number + password.
+- **Forgot password:** an OTP is sent to the registered mobile, then a new password is set (`POST /api/v1/auth/password/reset`). Staff with a registered mobile can use the same flow; other staff accounts are reset by an administrator.
+- **Demo mode:** with `PUSHKAR_DEV_MODE=true` and no SMS gateway, the OTP is shown on screen and labelled "Demo mode". Set it to `false` once an SMS provider is configured.
+- Passwords need 8+ characters with a letter and a number. 10 failed sign-ins for the same number or username in 15 minutes are refused. All sign-ins, registrations and resets are written to the audit log.
+- **Firebase** (project `godavari-pushkaralu-17a98`) provides Google Analytics: page views plus `login`, `sign_up` and `password_reset` events. Sign-in stays on the platform API so roles and the audit log keep working. Config is in `frontend/src/firebase.ts` (overridable with `VITE_FIREBASE_*`; `VITE_FIREBASE_DISABLED=true` turns it off). The web API key is public by design; restrict it to the site's domains in Google Cloud Console.
+
 ## Deploy on Render
 
 `render.yaml` is a Render Blueprint. It creates a PostgreSQL database and one Docker web service (`Dockerfile.render`) that serves the web app, the REST API and the live WebSocket from one address.
@@ -71,10 +79,10 @@ Notes:
 ## Tests
 
 ```bash
-cd backend && python -m pytest -q          # 72 API/workflow/security/real-time/video tests
+cd backend && python -m pytest -q          # 75 API/workflow/security/real-time/video tests
 cd .. && python loadtest/loadtest.py --users 100 --seconds 20
 # with the API and `npm run dev` running:
-cd frontend && npm test                      # 34 integration tests against the live API (set PUSHKAR_SEED_MODE=demo on that API)
+cd frontend && PUSHKAR_API_BASE=http://127.0.0.1:<port> npm test   # 35 integration tests; need a demo-seeded API (PUSHKAR_SEED_MODE=demo) and fail if none is reachable
 node scripts/ux-audit.mjs --out ux-out       # phone-size screenshots + overflow/touch-target audit (te/hi/en)
 ```
 

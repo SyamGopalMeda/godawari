@@ -68,6 +68,9 @@ async def lifespan(app: FastAPI):
         finally:
             db.close()
     _secure_bootstrap_admin()
+    # importing torch/ultralytics takes ~10 s; do it in the background so the first detector-status call is fast
+    import threading
+    threading.Thread(target=video_jobs.available, name="video-warmup", daemon=True).start()
     recovered = video_jobs.recover_interrupted()
     if recovered["failed"] or recovered["resubmitted"]:
         log.info("Video analysis recovery: %s", recovered)

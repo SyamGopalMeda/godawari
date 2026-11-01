@@ -83,3 +83,55 @@ def test_default_admin_password_is_replaced_when_a_real_one_is_configured(client
     finally:
         db.close()
     assert verify_password("A-real-Secret-123", h) and not verify_password(main.DEFAULT_ADMIN_PASSWORD, h)
+
+
+
+def _otp(client, phone):
+    r = client.post("/api/v1/auth/otp/request", json={"phone": phone})
+    assert r.status_code == 200, r.text
+    return r.json()["dev_otp"]
+
+
+def test_register_login_with_password_and_forgot_password(client):
+    phone = "9811100001"
+    # weak password rejected
+    r = client.post("/api/v1/auth/register", json={"phone": phone, "code": "000000", "password": "short"})
+    assert r.status_code == 422
+    # wrong OTP rejected
+    _otp(client, phone)
+    assert client.post("/api/v1/auth/register", json={"phone": phone, "code": "000000", "password": "Godavari2027"}).status_code == 400
+    code = _otp(client, phone)
+    r = client.post("/api/v1/auth/register", json={"phone": phone, "code": code, "password": "Godavari2027", "name": "Sita"})
+    assert r.status_code == 201, r.text
+    assert r.json()["user"]["role"] == "pilgrim" and r.json()["user"]["name"] == "Sita"
+    # sign in with the phone number in any common format
+    for ident in (phone, "+91" + phone, "98111 00001"):
+        assert client.post("/api/v1/auth/login", json={"username": ident, "password": "Godavari2027"}).status_code == 200
+    assert client.post("/api/v1/auth/login", json={"username": phone, "password": "wrong-pass1"}).status_code == 401
+    # registering again is refused
+    code = _otp(client, phone)
+    assert client.post("/api/v1/auth/register", json={"phone": phone, "code": code, "password": "Another2027"}).status_code == 409
+    # forgot password: OTP + new password, old password stops working
+    code = _otp(client, phone)
+    r = client.post("/api/v1/auth/password/reset", json={"phone": phone, "code": code, "new_password": "NewPass2027"})
+    assert r.status_code == 200 and r.json()["access_token"]
+    assert client.post("/api/v1/auth/login", json={"username": phone, "password": "Godavari2027"}).status_code == 401
+    assert client.post("/api/v1/auth/login", json={"username": phone, "password": "NewPass2027"}).status_code == 200
+    # an OTP cannot be reused
+    assert client.post("/api/v1/auth/password/reset", json={"phone": phone, "code": code, "new_password": "Again12345"}).status_code == 400
+
+
+def test_reset_for_unknown_number_and_otp_only_account(client):
+    code = _otp(client, "9811100002")
+    assert client.post("/api/v1/auth/password/reset", json={"phone": "9811100002", "code": code, "new_password": "Godavari2027"}).status_code == 404
+    # an account created by OTP sign-in has no password: login explains how to set one
+    code = _otp(client, "9811100003")
+    assert client.post("/api/v1/auth/otp/verify", json={"phone": "9811100003", "code": code}).status_code == 200
+    r = client.post("/api/v1/auth/login", json={"username": "9811100003", "password": "anything1"})
+    assert r.status_code == 401 and "Forgot password" in r.json()["detail"]
+
+
+def test_password_login_locks_after_repeated_failures(client):
+    for _ in range(10):
+        assert client.post("/api/v1/auth/login", json={"username": "nosuchuser", "password": "x"}).status_code == 401
+    assert client.post("/api/v1/auth/login", json={"username": "nosuchuser", "password": "x"}).status_code == 429

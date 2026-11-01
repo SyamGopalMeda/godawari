@@ -42,9 +42,10 @@ export default function AdminLogin() {
           <Field label="Password" htmlFor="p"><input id="p" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required /></Field>
           {err && <div className="err" role="alert">{err}</div>}
           <button className="btn primary big block" disabled={busy} aria-busy={busy || undefined}>{busy ? <span className="spin" aria-hidden /> : <LogIn size={18} aria-hidden />}{t('login')}</button>
-          <Notice>
-            Demo seed accounts (development only): <code>admin / admin12345</code> (admin), <code>staff1 / staff12345</code> (control room), <code>helpdesk2 / helpdesk12345</code> (help-desk volunteer).
-          </Notice>
+          <div className="row between wrap" style={{ gap: 8 }}>
+            <Link to="/login?mode=forgot" className="btn ghost sm">Forgot password?</Link>
+          </div>
+          <Notice>Staff with a registered mobile number can sign in with that number and reset a forgotten password by OTP. Accounts without a mobile number are reset by an administrator.</Notice>
         </form>
         <Link to="/" className="btn ghost sm" style={{ alignSelf: 'flex-start' }}><ArrowLeft size={16} aria-hidden />Pilgrim app</Link>
       </div>

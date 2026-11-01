@@ -47,8 +47,47 @@ class OtpVerify(BaseModel):
 
 
 class PasswordLogin(BaseModel):
-    username: str
-    password: str
+    username: str = Field(min_length=1, max_length=120)  # staff username, or a pilgrim's mobile number
+    password: str = Field(min_length=1, max_length=200)
+
+
+def strong_password(v: str) -> str:
+    if len(v) < 8 or not re.search(r"[A-Za-z]", v) or not re.search(r"\d", v):
+        raise ValueError("Password must be at least 8 characters and contain a letter and a number")
+    return v
+
+
+class RegisterIn(BaseModel):
+    phone: str
+    code: str = Field(min_length=4, max_length=8)
+    password: str = Field(max_length=200)
+    name: str | None = Field(default=None, max_length=120)
+
+    @field_validator("phone")
+    @classmethod
+    def _p(cls, v: str) -> str:
+        return normalize_phone(v)
+
+    @field_validator("password")
+    @classmethod
+    def _pw(cls, v: str) -> str:
+        return strong_password(v)
+
+
+class PasswordResetIn(BaseModel):
+    phone: str
+    code: str = Field(min_length=4, max_length=8)
+    new_password: str = Field(max_length=200)
+
+    @field_validator("phone")
+    @classmethod
+    def _p(cls, v: str) -> str:
+        return normalize_phone(v)
+
+    @field_validator("new_password")
+    @classmethod
+    def _pw(cls, v: str) -> str:
+        return strong_password(v)
 
 
 class UserOut(ORM):
