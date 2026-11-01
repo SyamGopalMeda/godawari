@@ -76,7 +76,7 @@ async def observe(request: Request, call_next):
         _metrics["errors"] += 1
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"  # OSM tile policy needs the site origin
     return response
 
 

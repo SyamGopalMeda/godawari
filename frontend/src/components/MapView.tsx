@@ -80,7 +80,7 @@ export default function MapView({ center, zoom = 15, locations, me, route, fitRo
   return (
     <div className="map-wrap" style={height ? { height } : undefined}>
       <MapContainer center={center} zoom={zoom} zoomControl={false} scrollWheelZoom={interactive} dragging={interactive} touchZoom={interactive} doubleClickZoom={interactive} boxZoom={interactive} keyboard={interactive} attributionControl style={{ height: '100%' }}>
-        <TileLayer url={TILE_URL} attribution={TILE_ATTR} maxZoom={19} />
+        <TileLayer url={TILE_URL} attribution={TILE_ATTR} maxZoom={19} referrerPolicy="strict-origin-when-cross-origin" />
         <FitTo bounds={bounds} />
         <FocusOn focus={focus} />
         {onSelect && interactive && <ClickAway onClick={() => onSelect(null)} />}
