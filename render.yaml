@@ -1,0 +1,38 @@
+# Render Blueprint: Dashboard -> New -> Blueprint -> pick this repository -> Apply.
+# Creates a PostgreSQL database and one web service that serves the app, the API and the WebSocket.
+databases:
+  - name: pushkar-db
+    plan: free            # free Render Postgres expires after 30 days; switch to a paid plan for the pilot
+    databaseName: pushkar
+    user: pushkar
+    region: singapore     # closest Render region to Andhra Pradesh / Telangana
+
+services:
+  - type: web
+    name: pushkar-sahayam
+    runtime: docker
+    plan: free            # sleeps after 15 min idle (first request then takes ~1 min); use "starter" to stay awake
+    region: singapore
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PUSHKAR_DATABASE_URL
+        fromDatabase:
+          name: pushkar-db
+          property: connectionString
+      - key: PUSHKAR_JWT_SECRET
+        generateValue: true
+      - key: PUSHKAR_BOOTSTRAP_ADMIN_PASSWORD
+        sync: false        # Render asks for it when you apply the Blueprint; this is the control-room admin password
+      - key: PUSHKAR_SEED_MODE
+        value: real        # verified Godavari bathing centres from OpenStreetMap; no fabricated crowd data
+      - key: PUSHKAR_SEED_ON_START
+        value: "true"
+      # Demo mode shows the one-time login code on screen because no SMS gateway is configured yet.
+      # Set to "false" after adding PUSHKAR_SMS_PROVIDER and its keys (docs/09), so codes only go by SMS.
+      - key: PUSHKAR_DEV_MODE
+        value: "true"
+      - key: PUSHKAR_CORS_ORIGINS
+        value: '[]'        # same origin; nothing else needs to call the API from a browser

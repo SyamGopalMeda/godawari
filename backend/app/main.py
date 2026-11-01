@@ -109,3 +109,30 @@ def metrics():
         f"pushkar_cache_hits_total {cache.stats['hits']}\n"
         f"pushkar_cache_misses_total {cache.stats['misses']}\n"
     )
+
+
+# ----------------------------------------------------------------------------- single-service hosting
+# When PUSHKAR_STATIC_DIR points at the built frontend, the API also serves the web app (registered last, so every
+# API, WebSocket and ops route above wins). Unknown paths fall back to index.html for client-side routing.
+if settings.static_dir and os.path.isdir(settings.static_dir):
+    from fastapi import HTTPException
+    from fastapi.responses import FileResponse
+
+    _static_root = os.path.realpath(settings.static_dir)
+    _no_cache = {"index.html", "sw.js", "registerSW.js", "manifest.webmanifest"}
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        if path.startswith(("api/", "ws/")):
+            raise HTTPException(404, "Not found")
+        target = os.path.realpath(os.path.join(_static_root, path))
+        if not target.startswith(_static_root + os.sep) or not os.path.isfile(target):
+            target = os.path.join(_static_root, "index.html")
+        name = os.path.basename(target)
+        if name in _no_cache:
+            headers = {"Cache-Control": "no-cache"}
+        elif "/assets/" in target.replace(os.sep, "/"):
+            headers = {"Cache-Control": "public, max-age=31536000, immutable"}
+        else:
+            headers = {"Cache-Control": "public, max-age=3600"}
+        return FileResponse(target, headers=headers)

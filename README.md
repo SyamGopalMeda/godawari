@@ -55,6 +55,19 @@ docker compose up --build
 # → http://localhost:8080  (API docs at /docs)
 ```
 
+## Deploy on Render
+
+`render.yaml` is a Render Blueprint. It creates a PostgreSQL database and one Docker web service (`Dockerfile.render`) that serves the web app, the REST API and the live WebSocket from one address.
+
+1. In the Render dashboard choose **New > Blueprint** and select this GitHub repository (or open `https://render.com/deploy?repo=https://github.com/SyamGopalMeda/godawari`).
+2. When asked, enter `PUSHKAR_BOOTSTRAP_ADMIN_PASSWORD`. This becomes the control-room `admin` password.
+3. Click **Apply**. The first build takes about 5 minutes. The site is then at `https://pushkar-sahayam.onrender.com` (or the name Render shows).
+
+Notes:
+- The free plan sleeps after 15 minutes without traffic, and the free database expires after 30 days. Use paid plans for a pilot.
+- `PUSHKAR_DEV_MODE=true` shows login codes on screen because no SMS gateway is configured. Set it to `false` after adding the SMS provider keys.
+- The video crowd-count detector is not installed in this image (it needs more memory than small instances have). Its page says so. Uploaded files are not kept across deploys.
+
 ## Tests
 
 ```bash

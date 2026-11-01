@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,6 +8,15 @@ class Settings(BaseSettings):
     """Runtime configuration. Every value can be overridden with an environment variable."""
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="PUSHKAR_", extra="ignore")
+
+    @field_validator("database_url")
+    @classmethod
+    def _psycopg_driver(cls, v: str) -> str:
+        # hosting providers (Render, Heroku) hand out postgres:// or postgresql:// URLs; use the psycopg 3 driver
+        for prefix in ("postgres://", "postgresql://"):
+            if v.startswith(prefix):
+                return "postgresql+psycopg://" + v[len(prefix):]
+        return v
 
     app_name: str = "Pushkar Sahayam API"
     dev_mode: bool = True  # when true, OTPs are returned in the API response and logged
@@ -16,6 +26,8 @@ class Settings(BaseSettings):
     jwt_expiry_hours: int = 12
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"]
     upload_dir: str = "./uploads"
+    # built frontend (frontend/dist) served by the API itself: one origin, no CORS (single-service hosting, e.g. Render)
+    static_dir: str | None = None
     seed_on_start: bool = True
     # real = verified Godavari bathing centres + OpenStreetMap locations (data/godavari_locations.json)
     # demo = synthetic single-site demo (tests, offline demos); none = no data

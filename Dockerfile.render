@@ -1,0 +1,24 @@
+# Single-service image for Render (or any host that runs one container): builds the web app and serves it from the
+# API, so pilgrim app, control room, REST API and WebSocket share one origin. The video crowd-count detector is not
+# installed (torch needs more memory than small instances have); its page shows "not installed".
+FROM node:22-slim AS web
+WORKDIR /web
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+FROM python:3.12-slim
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
+    PUSHKAR_STATIC_DIR=/app/static PUSHKAR_UPLOAD_DIR=/app/uploads
+COPY backend/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/app ./app
+COPY backend/scripts ./scripts
+COPY backend/simulators ./simulators
+COPY backend/data ./data
+COPY --from=web /web/dist ./static
+EXPOSE 10000
+# Render sets PORT; one worker because the in-process WebSocket broadcaster and video worker are per process
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1 --proxy-headers --forwarded-allow-ips='*'"]

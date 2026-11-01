@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/dev-dist
+**/__pycache__
+**/.pytest_cache
+backend/uploads
+backend/*.db*
+**/*.pt
+.codegraph
+.claude
+.git
+docs/screenshots
