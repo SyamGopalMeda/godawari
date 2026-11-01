@@ -71,7 +71,7 @@ Notes:
 ## Tests
 
 ```bash
-cd backend && python -m pytest -q          # 71 API/workflow/security/real-time/video tests
+cd backend && python -m pytest -q          # 72 API/workflow/security/real-time/video tests
 cd .. && python loadtest/loadtest.py --users 100 --seconds 20
 # with the API and `npm run dev` running:
 cd frontend && npm test                      # 34 integration tests against the live API (set PUSHKAR_SEED_MODE=demo on that API)

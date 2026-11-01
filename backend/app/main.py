@@ -28,6 +28,33 @@ log = logging.getLogger("app")
 _metrics = {"requests": 0, "errors": 0, "latency_sum": 0.0}
 
 
+DEFAULT_ADMIN_PASSWORD = "admin12345"
+
+
+def _secure_bootstrap_admin() -> None:
+    """The bootstrap admin is created once with PUSHKAR_BOOTSTRAP_ADMIN_PASSWORD. If a deployment started without that
+    variable, the account kept the public default password. When a real password is configured later, replace the
+    default on the next start; while none is configured outside dev databases, warn on every start."""
+    from sqlalchemy import select
+
+    from .models import User
+    from .security import hash_password, verify_password
+
+    db = SessionLocal()
+    try:
+        admin = db.scalar(select(User).where(User.username == settings.bootstrap_admin_username))
+        if not admin or not verify_password(DEFAULT_ADMIN_PASSWORD, admin.password_hash):
+            return
+        if settings.bootstrap_admin_password != DEFAULT_ADMIN_PASSWORD:
+            admin.password_hash = hash_password(settings.bootstrap_admin_password)
+            db.commit()
+            log.warning("Bootstrap admin still had the default password; replaced it with PUSHKAR_BOOTSTRAP_ADMIN_PASSWORD")
+        elif not settings.database_url.startswith("sqlite"):
+            log.error("SECURITY: admin '%s' uses the public default password. Set PUSHKAR_BOOTSTRAP_ADMIN_PASSWORD and restart.", admin.username)
+    finally:
+        db.close()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # sync (threadpool) endpoints: allow more concurrent handlers than anyio's default of 40
@@ -40,6 +67,7 @@ async def lifespan(app: FastAPI):
             seed_demo(db) if settings.seed_mode == "demo" else seed_real(db)
         finally:
             db.close()
+    _secure_bootstrap_admin()
     recovered = video_jobs.recover_interrupted()
     if recovered["failed"] or recovered["resubmitted"]:
         log.info("Video analysis recovery: %s", recovered)
@@ -121,7 +149,7 @@ if settings.static_dir and os.path.isdir(settings.static_dir):
     _static_root = os.path.realpath(settings.static_dir)
     _no_cache = {"index.html", "sw.js", "registerSW.js", "manifest.webmanifest"}
 
-    @app.get("/{path:path}", include_in_schema=False)
+    @app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
     def spa(path: str):
         if path.startswith(("api/", "ws/")):
             raise HTTPException(404, "Not found")

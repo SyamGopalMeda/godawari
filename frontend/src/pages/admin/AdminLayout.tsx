@@ -53,7 +53,7 @@ export default function AdminLayout() {
         {sys.map((l) => <Item key={l.to} l={l} />)}
         {label('Switch')}
         {other.map((l) => <Item key={l.to} l={l} />)}
-        <div className="hide-mobile stack tight" style={{ borderTop: '1px solid var(--line)', marginTop: 16, padding: '16px 8px 0' }}>
+        <div className="hide-mobile stack tight admin-user">
           <div>
             <div className="strong small" style={{ overflowWrap: 'anywhere' }}>{user?.name ?? user?.phone ?? '—'}</div>
             <span className="chip brand" style={{ marginTop: 4 }}>{user?.role}</span>

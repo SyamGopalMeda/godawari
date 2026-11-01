@@ -311,7 +311,7 @@ img, svg { flex-shrink: 0; }
 .btn.danger:hover:not(:disabled) { background: #8F1B13; }
 .btn.danger-outline { background: var(--surface); border-color: var(--danger-line); color: var(--danger); }
 .btn.danger-outline:hover:not(:disabled) { background: var(--danger-soft); }
-.btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.accent { background: var(--copper-700); border-color: var(--copper-700); color: #fff; }  /* white on #B06A30 is only 3.9:1 */
 .btn.ghost { background: transparent; border-color: transparent; color: var(--brand-ink); }
 .btn.ghost:hover:not(:disabled) { background: var(--surface-2); }
 .btn.block { width: 100%; }
@@ -577,6 +577,19 @@ button.lrow:hover, a.lrow:hover { background: var(--brand-50); border-color: var
 .admin aside a:hover { background: var(--surface-2); }
 .admin aside a.active { background: var(--brand-100); color: var(--brand-ink); }
 .admin main { padding: var(--s6) var(--s8); min-width: 0; }
+.admin-user { border-top: 1px solid var(--line); margin-top: 16px; padding: 16px 8px 0; }
+/* GloomDev espresso control-room sidebar (desktop and tablet) */
+@media (min-width: 761px) {
+  .admin aside { background: linear-gradient(180deg, #2C1A10 0%, #24150C 100%); border-right: 0; color: #FFF8F0; }
+  .admin aside .muted { color: #CDB49A; }
+  .admin aside .eyebrow { color: #B89878; }
+  .admin aside a { color: #E3D2BF; }
+  .admin aside a:hover { background: rgba(255, 248, 240, .08); color: #FFF8F0; }
+  .admin aside a.active { background: rgba(214, 150, 92, .2); color: #FFF8F0; box-shadow: inset 3px 0 0 #D6965C; }
+  .admin aside .brand-mark { background: linear-gradient(135deg, #B06A30, #7A4522); }
+  .admin aside :focus-visible { box-shadow: 0 0 0 2px #2C1A10, 0 0 0 4px #D6965C; }
+  .admin-user { background: #F6EFE7; color: #2A1A10; border-top: 0; border-radius: var(--r-md); padding: 12px; }
+}
 @media (max-width: 760px) { .admin { grid-template-columns: 1fr; } .admin aside { position: static; height: auto; display: flex; gap: var(--s1); overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); } .admin aside a { white-space: nowrap; } .admin main { padding: var(--s4); } }
 
 @media (prefers-reduced-motion: reduce) {

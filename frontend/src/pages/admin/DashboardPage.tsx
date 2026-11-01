@@ -118,14 +118,14 @@ export default function DashboardPage() {
           <div className="legend">{LEVELS.map((lv) => <span key={lv} className="row" style={{ gap: 6 }}><span className={`dot ${lv}`} />{LEVEL_WORD[lv]}</span>)}</div>
         </div>
         <div className="map-panel"><MapView center={center} zoom={15} locations={mapLocs} height="420px" /></div>
-        <div className="muted xs" style={{ marginTop: 8 }}>Demo coordinates — replace with surveyed facility data before deployment.</div>
+        <div className="muted xs" style={{ marginTop: 8 }}>Positions come from OpenStreetMap or the control room. Places without a verified position are not shown; confirm them in Locations.</div>
       </div>
 
       <div className="cols-2">
         <div className="card">
           <div className="card-head"><h2>Live event feed</h2><Activity size={18} aria-hidden className="muted" /></div>
           {feed.length === 0
-            ? <EmptyState icon={Activity} title="Waiting for events" body={<>Device and staff updates appear here as they happen. Run <code>backend/simulators/simulate.py</code> to generate demo traffic.</>} />
+            ? <EmptyState icon={Activity} title="Waiting for events" body="Crowd readings, SOS requests, missing-person reports and alerts appear here as they happen." />
             : <div className="list grouped">{feed.map((f, i) => <div key={i} className="small" style={{ padding: '10px 14px', overflowWrap: 'anywhere' }}><span className="muted">{new Date(f.at).toLocaleTimeString()}</span> · {f.text}</div>)}</div>}
         </div>
         <div className="stack">

@@ -57,3 +57,29 @@ def test_security_headers(client):
     r = client.get("/health")
     assert r.headers["x-content-type-options"] == "nosniff"
     assert r.headers["x-frame-options"] == "DENY"
+
+
+def test_default_admin_password_is_replaced_when_a_real_one_is_configured(client, monkeypatch):
+    from app import main
+    from app.config import settings
+    from app.db import SessionLocal
+    from app.models import User
+    from app.security import hash_password, verify_password
+    from sqlalchemy import select
+
+    db = SessionLocal()
+    try:
+        u = User(username="bootadmin", password_hash=hash_password(main.DEFAULT_ADMIN_PASSWORD), name="Boot", role="admin")
+        db.add(u)
+        db.commit()
+    finally:
+        db.close()
+    monkeypatch.setattr(settings, "bootstrap_admin_username", "bootadmin")
+    monkeypatch.setattr(settings, "bootstrap_admin_password", "A-real-Secret-123")
+    main._secure_bootstrap_admin()
+    db = SessionLocal()
+    try:
+        h = db.scalar(select(User.password_hash).where(User.username == "bootadmin"))
+    finally:
+        db.close()
+    assert verify_password("A-real-Secret-123", h) and not verify_password(main.DEFAULT_ADMIN_PASSWORD, h)
