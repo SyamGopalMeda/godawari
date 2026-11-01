@@ -18,7 +18,9 @@ from .db import SessionLocal, engine, ensure_schema
 from .routers import admin, alerts, auth, crowd, families, locations, missing, parking, rfid, routes, video, ws
 from .seed import seed_demo
 from .seed_real import seed_real
+from .limits import VideoUploadLimit
 from .services import cache
+from .services import video_analysis as video_jobs
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("app")
@@ -38,9 +40,13 @@ async def lifespan(app: FastAPI):
             seed_demo(db) if settings.seed_mode == "demo" else seed_real(db)
         finally:
             db.close()
+    recovered = video_jobs.recover_interrupted()
+    if recovered["failed"] or recovered["resubmitted"]:
+        log.info("Video analysis recovery: %s", recovered)
     await broadcaster.start()
     log.info("%s started (dev_mode=%s, db=%s)", settings.app_name, settings.dev_mode, settings.database_url.split("@")[-1])
     yield
+    video_jobs.shutdown()
     await broadcaster.stop()
 
 
@@ -50,6 +56,7 @@ app = FastAPI(
     description="Godavari Pushkaralu Smart Crowd Management & Pilgrim Assistance Platform API",
     lifespan=lifespan,
 )
+app.add_middleware(VideoUploadLimit, path="/api/v1/crowd/video/analyses")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

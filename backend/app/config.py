@@ -56,6 +56,7 @@ class Settings(BaseSettings):
     video_tile_overlap: float = 0.2
     video_tile_batch: int = 4
     video_tile_nms_iou: float = 0.5
+    video_tile_contain_ios: float = 0.7  # drop a tile-edge sliver covered this much by a larger box
     # tracking (lightweight IoU tracker over sampled frames → stable ids, approximate unique count)
     video_track_iou: float = 0.3
     video_track_max_age: int = 3
@@ -63,6 +64,7 @@ class Settings(BaseSettings):
     # annotated output video (boxes, ids and running count burned in) for playback in the control room
     video_output: bool = True
     video_output_long_px: int = 1280  # longest side of the output video / live preview
+    video_media_token_minutes: int = 60  # job-scoped token that lets <video>/<img> stream protected media
     video_ffmpeg_path: str | None = None  # default: ffmpeg on PATH, else the imageio-ffmpeg bundled binary
 
     # Abuse controls

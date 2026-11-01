@@ -66,4 +66,4 @@ def ensure_schema() -> None:
                 conn.execute(text(f"ALTER TABLE locations ALTER COLUMN {c} DROP NOT NULL"))
         # rows created before the provenance columns existed came from the synthetic demo seed
         conn.execute(text("UPDATE locations SET verification = 'demo' WHERE verification IS NULL"))
-        conn.execute(text("UPDATE video_analyses SET output_video = 0 WHERE output_video IS NULL"))
+        conn.execute(text("UPDATE video_analyses SET output_video = FALSE WHERE output_video IS NULL"))

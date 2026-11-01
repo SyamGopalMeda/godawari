@@ -12,7 +12,7 @@ It is deliberately **not** a live feed. Readings it produces carry `source = "vi
 | Detection | Frames are sampled at `sample_fps` (default 2 per second). Each sampled frame runs through **YOLOv8n** (ultralytics, COCO class 0 "person"). **Standard** mode is one pass at 640 px. **Tiled** mode cuts the frame into overlapping 1280 px tiles at native resolution, detects each tile at full size and merges the boxes with non-maximum suppression; **Auto** (default) uses tiled mode when the long side is 1600 px or more. The count per frame is the number of person detections above the confidence threshold. |
 | Tracking | A lightweight tracker (IoU, then centre distance relative to box size) links detections between sampled frames to give stable ids and an **approximate** "distinct people tracked" figure. It is labelled approximate everywhere: it degrades with low sample rates and with a moving camera. |
 | Live analysis | While the job runs, the page polls the latest annotated frame (`live.jpg`) every second and shows the count in the latest frame, distinct people so far, progress and the detection mode. |
-| Annotated video | Every frame of the clip (boxes held between samples) is written with boxes, track ids and a running count banner to `output.mp4` (H.264, yuv420p, faststart, long side 1280 px) through ffmpeg, so the control room can play it in the browser with the count synced to playback. Without ffmpeg the page falls back to a still-frame scrubber. |
+| Annotated video | Every source frame (thinned to at most about 30 fps for clips above that rate; boxes held between samples) is written with boxes, track ids and a running count banner to `output.mp4` (H.264, yuv420p, faststart, long side 1280 px) through ffmpeg at the matching frame rate, so the control room can play it in the browser with the count synced to playback. Without ffmpeg the page falls back to a still-frame scrubber. |
 | Results | Per-frame: video frame index, timestamp, count, distinct-so-far, inference time, bounding boxes with confidence and track id. Summary: peak, 95th percentile, mean, median, minimum, peak time, detections total, unique tracks, detection mode and tile count, median inference time, processing time, output size, device, model. Every 5th sampled frame (up to 120) is saved as an annotated JPEG. |
 | Review | The admin page shows detector status (tiling and ffmpeg availability), the live analysis card while running, KPI tiles, the tracking playback card (video player, synced count readout, "jump to peak", click-to-seek count chart), the annotated-stills gallery with zoom, a frame-by-frame table, and CSV / JSON downloads. |
 | Pipeline check | "Send through the crowd pipeline" records the chosen statistic (p95 by default) as a crowd reading for a location via the same `record_reading` function real devices use, broadcasts the WebSocket update, then reads `/crowd/status` back and reports the count, source and time it sees. |
@@ -46,11 +46,13 @@ A user-supplied aerial clip (2160×3840 portrait, 31.6 fps, 9.2 s, 291 frames) o
 | One pass at 640 px (old default) | 6 | 4.4 s incl. warm-up (about 45 ms steady) |
 | One pass at 1280 px | 107 | 44 ms |
 | One pass at 1920 px | 151 | 307 ms |
-| **Tiled, 1280 px tiles, 20 % overlap, 8 tiles (new auto default)** | **194** | 517 ms |
+| **Tiled, 1280 px tiles, 20 % overlap, 8 tiles (new auto default)** | **194** before border de-duplication, **153** after | 517 ms |
 | Tiled, 960 px tiles, 15 tiles | 201 | 2.97 s |
 | Tiled 1280 px with yolov8s | 201 | 1.2 s |
 
-Full re-run of the clip in auto (tiled) mode, 2 samples per second: 19 frames, **min 175 · mean 190 · median 191 · p95 211 · max 211** people per frame, 399 ms detection per frame, 26.6 s total including the annotated 720×1280 H.264 output (6.2 MB). Distinct people tracked about 492 (approximate; the drone camera moves and the sample rate is 2/s). The standard-mode count for a 1080p stock clip also rose from 31 to 45 with tiling, so tiling is on by default from 1600 px.
+Full re-run of the clip in auto (tiled) mode, 2 samples per second, after the review fixes: 19 frames, **min 146 · mean 160 · p95 179 · max 179** people per frame, 570 ms detection per frame, 43 s total including the annotated 720×1280 H.264 output (9.21 s, same length as the source). Distinct people tracked about 382 (approximate; the drone camera moves and the sample rate is 2/s).
+
+**Tile-border duplicates.** A first version of tiling reported about 190 per frame (max 211). Inspection showed that a person cut by a tile border was detected twice: once as a half-body sliver in one tile and once whole in the neighbouring tile. The two boxes overlap by less than the NMS threshold, so both were counted. On frame 100, 27 boxes were such slivers (all on tile borders, each next to the full box of the same person). The merge now drops a border-touching box when a larger box covers at least 70 % of it; an independent check (drop border boxes that another tile sees whole) gives the same result within 2 to 6 people per frame. Boxes that do not touch a tile border are never dropped, so people standing in front of each other are kept.
 
 Remaining limits: people hidden under umbrellas or canopies, or fully overlapped, are still missed; the nano model saturates in very dense clusters. For ghat cameras evaluate `yolov8m.pt` or a crowd-density (head-count) model on real footage.
 
@@ -69,12 +71,13 @@ All endpoints require a staff or admin login (`volunteer` can read).
 | GET | `/api/v1/crowd/video/analyses/{id}/frames` | per-frame counts; `?boxes=true` includes boxes; `?format=csv` downloads a spreadsheet |
 | GET | `/api/v1/crowd/video/analyses/{id}/frames/{name}` | annotated JPEG |
 | GET | `/api/v1/crowd/video/analyses/{id}/live.jpg` | latest annotated frame while running (no-store; polled by the live card) |
-| GET | `/api/v1/crowd/video/analyses/{id}/video` | annotated H.264 MP4 (supports Range requests for seeking) |
-| POST | `/api/v1/crowd/video/analyses/{id}/cancel` | cooperative cancel |
+| GET | `/api/v1/crowd/video/analyses/{id}/video` | annotated H.264 MP4 (supports Range requests for seeking and streaming) |
+| POST | `/api/v1/crowd/video/analyses/{id}/media-token` | short-lived token (default 60 min) scoped to one job; the media routes above accept `?t=<token>` so the browser's `<video>` can stream with Range requests instead of downloading the whole file into memory |
+| POST | `/api/v1/crowd/video/analyses/{id}/cancel` | queued: cancelled at once; running: `cancelling`, then `cancelled` at the next analysed frame (files released, partial video removed) |
 | POST | `/api/v1/crowd/video/analyses/{id}/publish` | `{location_id, statistic: max|mean|p95|median, note}` → crowd reading with source `video` |
-| DELETE | `/api/v1/crowd/video/analyses/{id}` | delete job, video file and frames |
+| DELETE | `/api/v1/crowd/video/analyses/{id}` | delete job, video file and frames; **409 while running** (cancel first) |
 
-Jobs run on one worker thread per API process, so one video is processed at a time. Progress is stored in the database and polled by the page every 1.5 s. Every create, cancel, publish and delete is written to the audit log.
+Jobs run on one worker thread per API process, so one video is processed at a time. Stop requests (cancel, shutdown) are read from the job's database row at every analysed frame, so a stale request can never hit a later upload, and SQLite never reuses a deleted job id. On start-up, jobs left `running` by a previous process are marked failed ("Interrupted by an API restart") and `queued` jobs are re-submitted. Run the API as a single process per database (`--workers 1`, as the Dockerfile does). Uploads larger than `VIDEO_MAX_MB` are refused with 413 while the body is still arriving, before it is spooled to disk. Progress is stored in the database and polled by the page every second (the live card fetches live.jpg on the same cadence). Every create, cancel, publish and delete is written to the audit log.
 
 ## 12.4 Installation
 
@@ -86,7 +89,9 @@ pip install -r requirements-video.txt      # ultralytics, opencv-python-headless
 # GPU: install the CUDA build of torch for your driver first (https://pytorch.org/get-started/locally/)
 ```
 
-Docker: `docker compose build --build-arg WITH_VIDEO=1` installs a CPU-only torch (adds about 1 GB to the image). For GPU inference run the API outside Docker or switch the base image to `nvidia/cuda`. Without the stack, the page shows "not installed" with the install command and uploads are refused with HTTP 503.
+Install torch **and torchvision together from the same PyTorch index** (for example `pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126`, or `.../whl/cpu`) before `pip install -r requirements-video.txt`. A torchvision from a different index cannot load its compiled ops, and tiled detection (which uses its NMS) then fails; the health check reports this as "not installed".
+
+Docker: `docker compose build --build-arg WITH_VIDEO=1` installs CPU-only torch and torchvision, keeps the headless OpenCV build (the GUI build that ultralytics pulls in needs libGL, which the slim image lacks) and fails the build if the stack does not import. It adds about 1 GB to the image. The bundled nginx accepts video uploads up to 310 MB on `/api/v1/crowd/video/` (6 MB elsewhere); any other proxy in front of the API needs a matching limit. For GPU inference run the API outside Docker or switch the base image to `nvidia/cuda`. Without the stack, the page shows "not installed" with the install command and uploads are refused with HTTP 503.
 
 Settings (prefix `PUSHKAR_`): `VIDEO_MODEL_PATH` (default `yolov8n.pt`), `VIDEO_MAX_MB` (300), `VIDEO_MAX_SECONDS` (600), `VIDEO_SAMPLE_FPS` (2), `VIDEO_IMGSZ` (640), `VIDEO_ANNOTATE_EVERY` (5), `VIDEO_MAX_ANNOTATED` (120); tiling `VIDEO_DETECTION_MODE` (auto), `VIDEO_AUTO_TILE_MIN_PX` (1600), `VIDEO_TILE_PX` (1280), `VIDEO_TILE_OVERLAP` (0.2), `VIDEO_TILE_BATCH` (4), `VIDEO_TILE_NMS_IOU` (0.5); tracking `VIDEO_TRACK_IOU` (0.3), `VIDEO_TRACK_MAX_AGE` (3), `VIDEO_TRACK_DIST_FACTOR` (1.0); output `VIDEO_OUTPUT` (true), `VIDEO_OUTPUT_LONG_PX` (1280), `VIDEO_FFMPEG_PATH` (default: `ffmpeg` on PATH, else the `imageio-ffmpeg` bundled binary, which `requirements-video.txt` installs).
 

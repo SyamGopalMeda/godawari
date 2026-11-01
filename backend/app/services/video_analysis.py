@@ -3,8 +3,8 @@
 An operator uploads a recorded video. Frames are sampled at `sample_fps`; each sampled frame is run through a
 YOLOv8 person detector (COCO class 0). Dense or high-resolution footage (aerial 4K crowds) is detected
 **tiled**: the frame is cut into overlapping tiles at native resolution, each tile is detected at full size and
-the boxes are merged with non-maximum suppression. Downscaling a 4K frame to 640 px makes a person a few pixels
-tall and the detector misses most of them; tiling fixes that.
+the boxes are merged with non-maximum suppression plus an edge-aware containment pass. Downscaling a 4K frame
+to 640 px makes a person a few pixels tall and the detector misses most of them; tiling fixes that.
 
 Outputs per job (in <upload_dir>/video/<job>/):
   frames.json   per sampled frame: index, video frame, time, count, boxes [x1,y1,x2,y2,conf,track_id], infer ms
@@ -12,8 +12,15 @@ Outputs per job (in <upload_dir>/video/<job>/):
   live.jpg      latest annotated frame while running (live preview)
   output.mp4    the whole clip with boxes, track ids and a running count burned in (H.264 via ffmpeg)
 
-Track ids come from a lightweight IoU tracker over sampled frames; "unique people" from it is approximate and
-is labelled as such. Counting for density = people per frame (occupancy).
+Track ids come from a lightweight tracker over sampled frames; "unique people" from it is approximate and is
+labelled as such. Counting for density = people per frame (occupancy).
+
+Job lifecycle (all stop signals live in the database row, so nothing is keyed by a reusable integer id):
+  queued -> running -> done | failed
+  queued -> cancelled                      (cancel or delete before the worker picked it up)
+  running -> cancelling -> cancelled       (operator cancel; the worker stops at the next sampled frame)
+  running -> failed                        (API shutdown / restart: see shutdown() and recover_interrupted())
+One worker thread per API process; the API must run as a single process per database (uvicorn --workers 1).
 """
 from __future__ import annotations
 
@@ -30,13 +37,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from sqlalchemy import select
+
 from ..config import settings
 from ..db import SessionLocal
 from ..models import VideoAnalysis
 
 log = logging.getLogger("video")
 _executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="video-analysis")
-_cancel: set[int] = set()
+_stopping = threading.Event()
 _model_lock = threading.Lock()
 _models: dict[str, Any] = {}
 _model_info: dict[str, Any] = {}
@@ -72,6 +81,14 @@ def available() -> dict[str, Any]:
         info.update({"available": True, "ultralytics": ultralytics.__version__, "torch": torch.__version__, "opencv": cv2.__version__, "cuda": bool(torch.cuda.is_available())})
         if info["cuda"]:
             info["device"] = torch.cuda.get_device_name(0)
+        try:  # tiled mode needs torchvision's compiled ops (NMS); a torchvision from another index cannot load them
+            import torchvision
+            from torchvision.ops import nms  # noqa: F401
+
+            info["torchvision"] = torchvision.__version__
+        except Exception as e:  # noqa: BLE001
+            info["available"] = False
+            info["error"] = f"torchvision ops unavailable ({type(e).__name__}: {e}); install torch and torchvision from the same PyTorch index"
     except Exception as e:  # noqa: BLE001
         info["error"] = f"{type(e).__name__}: {e}"
         info["install"] = "pip install -r backend/requirements-video.txt"
@@ -123,10 +140,40 @@ def choose_mode(mode: str, w: int, h: int) -> tuple[str, int]:
     return "standard", 1
 
 
+def merge_tiled(boxes, scores, edge, iou_thresh: float, contain_thresh: float):
+    """Merge tile detections already offset into frame coordinates.
+
+    boxes [N,4], scores [N], edge [N] bool (box touches an inner tile border, i.e. may be a clipped sliver).
+    1. Standard NMS at `iou_thresh`.
+    2. A sliver cut off by a tile border overlaps its full-size twin from the neighbouring tile by less than the
+       NMS IoU, so it survives step 1 and double-counts. Drop every kept *edge* box whose area is covered at least
+       `contain_thresh` by a larger kept box. Non-edge boxes are never dropped here, so genuinely nested people
+       (a child in front of an adult) elsewhere in the frame are kept.
+    """
+    import torch
+    from torchvision.ops import nms
+
+    keep = nms(boxes, scores, iou_thresh)
+    boxes, scores, edge = boxes[keep], scores[keep], edge[keep]
+    if len(boxes) > 1 and bool(edge.any()):
+        area = (boxes[:, 2] - boxes[:, 0]).clamp(min=0) * (boxes[:, 3] - boxes[:, 1]).clamp(min=0)
+        lt = torch.max(boxes[:, None, :2], boxes[None, :, :2])
+        rb = torch.min(boxes[:, None, 2:], boxes[None, :, 2:])
+        wh = (rb - lt).clamp(min=0)
+        inter = wh[..., 0] * wh[..., 1]
+        ios = inter / area[:, None].clamp(min=1e-6)  # intersection over own area, [i, j]
+        ios.fill_diagonal_(0)
+        larger = area[None, :] > area[:, None]       # [i, j]: j is larger than i
+        covered = ((ios >= contain_thresh) & larger).any(dim=1)
+        keep2 = ~(edge & covered)
+        boxes, scores = boxes[keep2], scores[keep2]
+    return boxes, scores
+
+
 def detect_persons(frame, conf: float, mode: str = "standard", model_path: str | None = None) -> list[list[float]]:
     """Return [[x1,y1,x2,y2,conf], ...] for persons in a BGR frame.
 
-    standard: one pass at settings.video_imgsz.  tiled: native-resolution tiles merged with NMS.
+    standard: one pass at settings.video_imgsz.  tiled: native-resolution tiles merged with NMS + containment.
     Module-level so tests can monkeypatch it without a model or a GPU.
     """
     model = _load_model(model_path)
@@ -137,33 +184,34 @@ def detect_persons(frame, conf: float, mode: str = "standard", model_path: str |
             return []
         return [[round(x1, 1), round(y1, 1), round(x2, 1), round(y2, 1), round(c, 3)] for (x1, y1, x2, y2), c in zip(res.boxes.xyxy.tolist(), res.boxes.conf.tolist())]
     import torch
-    from torchvision.ops import nms
 
     h, w = frame.shape[:2]
     T = min(settings.video_tile_px, max(w, h))
     grid = tile_grid(w, h, T, settings.video_tile_overlap)
     tiles = [frame[y:y + T, x:x + T] for x, y in grid]
-    boxes, scores = [], []
+    boxes, scores, edges = [], [], []
     batch = max(1, settings.video_tile_batch)
     for i in range(0, len(tiles), batch):
         res = model.predict(tiles[i:i + batch], classes=[0], conf=conf, imgsz=T, device=dev, verbose=False)
-        for r, (ox, oy) in zip(res, grid[i:i + batch]):
-            if r.boxes is not None and len(r.boxes):
-                b = r.boxes.xyxy.clone()
-                b[:, [0, 2]] += ox
-                b[:, [1, 3]] += oy
-                boxes.append(b)
-                scores.append(r.boxes.conf)
+        for r, (ox, oy), tile in zip(res, grid[i:i + batch], tiles[i:i + batch]):
+            if r.boxes is None or not len(r.boxes):
+                continue
+            th, tw = tile.shape[:2]
+            b = r.boxes.xyxy.clone()
+            e = (((b[:, 0] <= 1) & (ox > 0)) | ((b[:, 2] >= tw - 1) & (ox + tw < w))
+                 | ((b[:, 1] <= 1) & (oy > 0)) | ((b[:, 3] >= th - 1) & (oy + th < h)))
+            b[:, [0, 2]] += ox
+            b[:, [1, 3]] += oy
+            boxes.append(b)
+            scores.append(r.boxes.conf)
+            edges.append(e)
     if not boxes:
         return []
-    b = torch.cat(boxes)
-    s = torch.cat(scores)
-    keep = nms(b, s, settings.video_tile_nms_iou)
-    b, s = b[keep].tolist(), s[keep].tolist()
-    return [[round(x1, 1), round(y1, 1), round(x2, 1), round(y2, 1), round(c, 3)] for (x1, y1, x2, y2), c in zip(b, s)]
+    b, s = merge_tiled(torch.cat(boxes), torch.cat(scores), torch.cat(edges), settings.video_tile_nms_iou, settings.video_tile_contain_ios)
+    return [[round(x1, 1), round(y1, 1), round(x2, 1), round(y2, 1), round(c, 3)] for (x1, y1, x2, y2), c in zip(b.tolist(), s.tolist())]
 
 
-# ----------------------------------------------------------------------------- tracking (lightweight IoU tracker)
+# ----------------------------------------------------------------------------- tracking (lightweight tracker)
 def _iou(a: list[float], b: list[float]) -> float:
     ix1, iy1, ix2, iy2 = max(a[0], b[0]), max(a[1], b[1]), min(a[2], b[2]), min(a[3], b[3])
     inter = max(0.0, ix2 - ix1) * max(0.0, iy2 - iy1)
@@ -253,7 +301,11 @@ def draw(frame, boxes: list[list[float]], ids: list[int] | None, label: str, sca
 
 
 class FfmpegWriter:
-    """Pipe BGR frames to ffmpeg → H.264 MP4 (yuv420p, faststart) that browsers can play."""
+    """Pipe BGR frames to ffmpeg → H.264 MP4 (yuv420p, faststart) that browsers can play.
+
+    close() finishes the file; abort() stops early and removes the partial file. Both release the process and the
+    file handle, so a job that ends in any state leaves nothing open (matters for delete on Windows).
+    """
 
     def __init__(self, path: Path, w: int, h: int, fps: float):
         exe = ffmpeg_path()
@@ -261,9 +313,11 @@ class FfmpegWriter:
             raise RuntimeError("ffmpeg not found")
         w, h = w - w % 2, h - h % 2
         self.size = (w, h)
+        self.path = Path(path)
+        self.finished = False
         self.proc = subprocess.Popen(
             [exe, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{w}x{h}", "-r", f"{fps:.3f}", "-i", "-",
-             "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(path)],
+             "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(self.path)],
             stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
         )
 
@@ -273,12 +327,44 @@ class FfmpegWriter:
         assert self.proc.stdin
         self.proc.stdin.write(img.tobytes())
 
+    def _finish(self, timeout: float) -> str:
+        p = self.proc
+        if p.stdin and not p.stdin.closed:
+            try:
+                p.stdin.close()
+            except OSError:
+                pass
+        try:
+            p.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            p.wait()
+        err = ""
+        if p.stderr:
+            try:
+                err = p.stderr.read().decode(errors="ignore")
+            finally:
+                p.stderr.close()
+        self.finished = True
+        return err
+
     def close(self) -> None:
-        if self.proc.stdin:
-            self.proc.stdin.close()
-        err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
-        if self.proc.wait() != 0:
+        if self.finished:
+            return
+        err = self._finish(timeout=300)
+        if self.proc.returncode != 0:
             raise RuntimeError(f"ffmpeg failed: {err[-300:]}")
+
+    def abort(self) -> None:
+        if self.finished:
+            return
+        try:
+            self._finish(timeout=10)
+        finally:
+            try:
+                self.path.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 # ----------------------------------------------------------------------------- job lifecycle
@@ -287,11 +373,74 @@ def job_dir(job_id: int) -> Path:
 
 
 def submit(job_id: int) -> None:
+    if _stopping.is_set():
+        return
     _executor.submit(_run_safely, job_id)
 
 
-def cancel(job_id: int) -> None:
-    _cancel.add(job_id)
+def request_cancel(job: VideoAnalysis) -> None:
+    """Flip the row so the worker stops: queued jobs are cancelled outright, running jobs go to 'cancelling' and the
+    worker marks them 'cancelled' at its next sampled frame (after releasing its files). Caller commits."""
+    if job.status == "queued":
+        job.status = "cancelled"
+        job.finished_at = datetime.now(timezone.utc)
+    elif job.status == "running":
+        job.status = "cancelling"
+
+
+def shutdown() -> None:
+    """Stop accepting work and make the running job stop at its next sampled frame (bounded by one detection).
+    Rows left 'queued' or 'running' are repaired by recover_interrupted() at the next start."""
+    _stopping.set()
+    _executor.shutdown(wait=False, cancel_futures=True)
+
+
+def recover_interrupted() -> dict[str, int]:
+    """Called at API start-up. Jobs that were running when the previous process stopped are marked failed (their
+    worker is gone); jobs still queued are re-submitted if their upload exists. Assumes one API process per
+    database (the Dockerfile runs uvicorn with --workers 1)."""
+    failed, resubmit = 0, []
+    db = SessionLocal()
+    try:
+        now = datetime.now(timezone.utc)
+        for job in db.scalars(select(VideoAnalysis).where(VideoAnalysis.status.in_(("running", "cancelling")))).all():
+            job.status = "failed" if job.status == "running" else "cancelled"
+            if job.status == "failed":
+                job.error = "Interrupted by an API restart; upload the clip again"
+            job.finished_at = now
+            failed += 1
+            for name in ("output.mp4", "live.jpg"):
+                try:
+                    (job_dir(job.id) / name).unlink(missing_ok=True)
+                except OSError:
+                    pass
+        for job in db.scalars(select(VideoAnalysis).where(VideoAnalysis.status == "queued").order_by(VideoAnalysis.id)).all():
+            if job.path and os.path.exists(job.path):
+                resubmit.append(job.id)
+            else:
+                job.status = "failed"
+                job.error = "Uploaded file is missing"
+                job.finished_at = now
+                failed += 1
+        db.commit()
+    finally:
+        db.close()
+    for jid in resubmit:
+        submit(jid)
+    return {"failed": failed, "resubmitted": len(resubmit)}
+
+
+def _release(cap, writer: FfmpegWriter | None) -> None:
+    if cap is not None:
+        try:
+            cap.release()
+        except Exception:  # noqa: BLE001
+            pass
+    if writer is not None:
+        try:
+            writer.abort()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def _run_safely(job_id: int) -> None:
@@ -302,7 +451,7 @@ def _run_safely(job_id: int) -> None:
         db = SessionLocal()
         try:
             job = db.get(VideoAnalysis, job_id)
-            if job:
+            if job and job.status in ("running", "cancelling"):
                 job.status = "failed"
                 job.error = f"{type(e).__name__}: {e}"[:1000]
                 job.finished_at = datetime.now(timezone.utc)
@@ -316,10 +465,11 @@ def _run(job_id: int) -> None:
 
     db = SessionLocal()
     writer: FfmpegWriter | None = None
+    cap = None
     try:
         job = db.get(VideoAnalysis, job_id)
-        if not job or job.status == "cancelled":
-            return
+        if not job or job.status != "queued" or _stopping.is_set():
+            return  # cancelled/deleted before we started, or already run by another task
         job.status = "running"
         job.started_at = datetime.now(timezone.utc)
         env = available()
@@ -336,7 +486,7 @@ def _run(job_id: int) -> None:
         duration = total / fps if fps else 0.0
         max_frames = int(min(total, settings.video_max_seconds * fps)) if total else int(settings.video_max_seconds * fps)
         step = max(1, int(round(fps / job.sample_fps)))
-        expected = max(1, max_frames // step)
+        expected = max(1, len(range(0, max_frames, step)))  # exactly the frames the loop below samples
         mode, n_tiles = choose_mode(job.detection_mode or "auto", width, height)
         job.detection_mode, job.tiles = mode, n_tiles
         job.video_fps, job.video_frames, job.video_width, job.video_height, job.video_duration_s = round(fps, 3), total, width, height, round(duration, 2)
@@ -344,12 +494,17 @@ def _run(job_id: int) -> None:
         db.commit()
 
         out = job_dir(job_id)
+        # databases created before sqlite_autoincrement can hand out a deleted job's id: never mix in its files
+        shutil.rmtree(out, ignore_errors=True)
         out.mkdir(parents=True, exist_ok=True)
         out_scale = min(1.0, settings.video_output_long_px / max(width, height))
         ow, oh = int(width * out_scale), int(height * out_scale)
+        # every original frame goes to the output (boxes held between samples) for smooth playback, thinned
+        # to at most ~30 fps; the encoder rate follows the thinning so playback time matches the source clip
+        write_every = max(1, int(round(fps / 30.0)))
         if settings.video_output and ffmpeg_path():
             try:
-                writer = FfmpegWriter(out / "output.mp4", ow, oh, min(fps, 30.0))
+                writer = FfmpegWriter(out / "output.mp4", ow, oh, fps / write_every)
             except Exception as e:  # noqa: BLE001
                 log.warning("No annotated video for job %s: %s", job_id, e)
                 writer = None
@@ -362,18 +517,27 @@ def _run(job_id: int) -> None:
         cur_boxes: list[list[float]] = []
         cur_ids: list[int] = []
         cur_label = "analysing…"
-        # write every original frame to the output (boxes held between samples) for smooth playback
-        write_every = max(1, int(round(fps / 30.0)))
         while i < max_frames:
             ok, frame = cap.read()
             if not ok:
                 break
             if i % step == 0:
-                if job_id in _cancel:
-                    job.status = "cancelled"
-                    job.finished_at = datetime.now(timezone.utc)
-                    db.commit()
-                    _cancel.discard(job_id)
+                # the row is the only source of truth for stop requests (cancel, delete, shutdown)
+                status_now = db.scalar(select(VideoAnalysis.status).where(VideoAnalysis.id == job_id))
+                if status_now != "running" or _stopping.is_set():
+                    _release(cap, writer)
+                    cap = writer = None
+                    if status_now == "cancelling":
+                        job.status = "cancelled"
+                        job.finished_at = datetime.now(timezone.utc)
+                        db.commit()
+                    elif status_now == "running":  # API shutting down
+                        job.status = "failed"
+                        job.error = "Interrupted by API shutdown; upload the clip again"
+                        job.finished_at = datetime.now(timezone.utc)
+                        db.commit()
+                    else:  # row deleted or changed by someone else: leave it alone
+                        db.rollback()
                     return
                 t1 = time.time()
                 cur_boxes = detect_persons(frame, job.confidence, mode)
@@ -385,7 +549,12 @@ def _run(job_id: int) -> None:
                 rec: dict[str, Any] = {"index": len(frames), "frame": i, "t": ts, "count": n, "unique_so_far": len(tracker.seen), "infer_ms": infer_ms,
                                        "boxes": [b + [tid] for b, tid in zip(cur_boxes, cur_ids)]}
                 img = draw(frame, cur_boxes, cur_ids, cur_label, out_scale)
-                cv2.imwrite(str(out / "live.jpg"), img if max(ow, oh) <= 1280 else cv2.resize(img, None, fx=1280 / max(ow, oh), fy=1280 / max(ow, oh)), [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+                # write to a temp name and swap, so a reader never sees a half-written live.jpg
+                cv2.imwrite(str(out / "live.tmp.jpg"), img, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+                try:
+                    os.replace(out / "live.tmp.jpg", out / "live.jpg")
+                except OSError:
+                    pass  # Windows: a reader holds live.jpg right now; the next frame updates it
                 if len(frames) % settings.video_annotate_every == 0 and annotated < settings.video_max_annotated:
                     name = f"f{len(frames):05d}.jpg"
                     cv2.imwrite(str(out / name), img, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
@@ -398,14 +567,16 @@ def _run(job_id: int) -> None:
                 if time.time() - last_commit > 1.0:
                     db.commit()
                     last_commit = time.time()
-                if writer:
+                if writer and i % write_every == 0:
                     writer.write(img)
             elif writer and i % write_every == 0:
                 writer.write(draw(frame, cur_boxes, cur_ids, cur_label, out_scale))
             i += 1
         cap.release()
+        cap = None
         if writer:
             writer.close()
+            writer = None
             job.output_video = True
         counts = [f["count"] for f in frames]
         if not counts:
@@ -418,8 +589,8 @@ def _run(job_id: int) -> None:
             "count_median": statistics.median(counts), "count_p95": sorted(counts)[min(len(counts) - 1, int(0.95 * len(counts)))],
             "peak_t": frames[peak]["t"], "peak_frame": frames[peak]["frame"], "peak_image": frames[peak].get("image"),
             "detections_total": sum(counts), "unique_tracks": len(tracker.seen), "infer_ms_median": statistics.median(f["infer_ms"] for f in frames),
-            "processing_s": round(time.time() - t0, 2), "annotated_frames": annotated, "output_video": bool(writer),
-            "output_size": [ow, oh] if writer else None,
+            "processing_s": round(time.time() - t0, 2), "annotated_frames": annotated, "output_video": bool(job.output_video),
+            "output_size": [ow, oh] if job.output_video else None,
             "analysed_seconds": round(min(duration, settings.video_max_seconds), 2) if duration else None,
             "truncated": bool(total and max_frames < total),
         }
@@ -428,11 +599,7 @@ def _run(job_id: int) -> None:
         db.commit()
         log.info("Video analysis %s done (%s, %d tiles): %d frames, max %d, mean %.1f, unique≈%d, %.1fs", job_id, mode, n_tiles, len(counts), max(counts), job.summary["count_mean"], len(tracker.seen), job.summary["processing_s"])
     finally:
-        if writer and writer.proc.poll() is None:
-            try:
-                writer.proc.kill()
-            except Exception:  # noqa: BLE001
-                pass
+        _release(cap, writer)
         db.close()
 
 
@@ -441,14 +608,20 @@ def load_frames(job_id: int) -> list[dict[str, Any]]:
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
 
 
-def remove_files(job_id: int) -> None:
+def remove_files(job_id: int, path: str | None = None) -> bool:
+    """Delete a job's output folder and upload. Never raises: a file still held by a process (Windows) is logged and
+    left behind so the API row can still be removed. Returns True when everything was removed."""
+    ok = True
     d = job_dir(job_id)
     if d.exists():
         shutil.rmtree(d, ignore_errors=True)
-    db = SessionLocal()
-    try:
-        job = db.get(VideoAnalysis, job_id)
-        if job and job.path and os.path.exists(job.path):
-            os.remove(job.path)
-    finally:
-        db.close()
+        if d.exists():
+            ok = False
+            log.warning("Could not fully remove %s (file in use?)", d)
+    if path and os.path.exists(path):
+        try:
+            os.remove(path)
+        except OSError as e:
+            ok = False
+            log.warning("Could not remove upload %s: %s", path, e)
+    return ok

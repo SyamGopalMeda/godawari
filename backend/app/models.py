@@ -371,13 +371,14 @@ class VideoAnalysis(Base):
     reading with source="video" (never presented as a live camera feed).
     """
     __tablename__ = "video_analyses"
+    __table_args__ = {"sqlite_autoincrement": True}  # never reuse a deleted job id (ignored by PostgreSQL)
     id: Mapped[int] = mapped_column(primary_key=True)
     created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     location_id: Mapped[int | None] = mapped_column(ForeignKey("locations.id"))
     filename: Mapped[str] = mapped_column(String(255))
     path: Mapped[str] = mapped_column(String(400))
     size_bytes: Mapped[int] = mapped_column(Integer, default=0)
-    status: Mapped[str] = mapped_column(String(12), default="queued", index=True)  # queued|running|done|failed|cancelled
+    status: Mapped[str] = mapped_column(String(12), default="queued", index=True)  # queued|running|cancelling|done|failed|cancelled
     sample_fps: Mapped[float] = mapped_column(Float, default=2.0)
     confidence: Mapped[float] = mapped_column(Float, default=0.35)
     model_name: Mapped[str | None] = mapped_column(String(80))

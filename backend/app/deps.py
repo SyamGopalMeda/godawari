@@ -83,6 +83,8 @@ def audit(
     purpose: str | None = None,
     request: Request | None = None,
 ) -> None:
+    if purpose is not None:
+        purpose = purpose[:255]  # String(255); PostgreSQL rejects longer values
     db.add(
         AuditLog(
             actor_id=actor.id if actor else None,

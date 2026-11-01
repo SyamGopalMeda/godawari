@@ -2,4 +2,5 @@
 ultralytics>=8.3
 opencv-python-headless>=4.9
 torch>=2.2
+torchvision>=0.17  # install torch and torchvision from the SAME PyTorch index (cpu or cuXXX), see docs/12
 imageio-ffmpeg>=0.5  # bundled ffmpeg binary for the annotated tracking video (system ffmpeg on PATH is used first)

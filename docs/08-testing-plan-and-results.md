@@ -110,7 +110,8 @@ Details, defects found and fixed: [10-mobile-ux-redesign.md §10.7](10-mobile-ux
 
 | Check | Result |
 |---|---|
-| Backend suite (now 63: + verified-location dataset/provenance/admin validation, + video analysis pipeline with a stubbed detector) | **63 passed** |
+| Backend suite (63 at that run: + verified-location dataset/provenance/admin validation, + video analysis pipeline with a stubbed detector) | **63 passed** |
+| Backend suite after the video tracking work (2026-11-01: + tiling helpers, tile-edge merge, row-scoped cancel, delete-while-running 409, restart recovery, output cadence at 50 fps, upload body limit, media tokens) | **71 passed** |
 | Frontend integration tests (34: + `/ghats`, `/places/:id` mapped and unknown, `/admin/video`) | **34 passed** |
 | Real detector end-to-end (stock crowd clip, GPU) | 29 frames, 23–34 people/frame, 12.9 ms/frame, published count reached `/crowd/status` as source `video` (docs/12) |
 

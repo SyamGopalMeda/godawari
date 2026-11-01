@@ -122,12 +122,12 @@ def test_full_pipeline_sampled_counts_frames_csv_images_and_publish(client, staf
     with_boxes = client.get(f"/api/v1/crowd/video/analyses/{job['id']}/frames", params={"boxes": "true"}, headers=staff).json()["frames"]
     assert len(with_boxes[3]["boxes"]) == 3 and with_boxes[3]["boxes"][0][4] == 0.9 and isinstance(with_boxes[3]["boxes"][0][5], int)  # track id
     csv_text = client.get(f"/api/v1/crowd/video/analyses/{job['id']}/frames", params={"format": "csv"}, headers=staff).text
-    assert csv_text.splitlines()[0] == "index,frame,t_seconds,count,infer_ms,image" and len(csv_text.splitlines()) == 9
+    assert csv_text.splitlines()[0] == "index,frame,t_seconds,count,unique_so_far,infer_ms,image" and len(csv_text.splitlines()) == 9
 
     img_name = next(f["image"] for f in frames if f.get("image"))
     r = client.get(f"/api/v1/crowd/video/analyses/{job['id']}/frames/{img_name}", headers=staff)
     assert r.status_code == 200 and r.headers["content-type"] == "image/jpeg" and r.content[:2] == b"\xff\xd8"
-    assert client.get(f"/api/v1/crowd/video/analyses/{job["id"]}/frames/..%2F..%2Fetc", headers=staff).status_code in (404, 422)  # traversal rejected
+    assert client.get(f"/api/v1/crowd/video/analyses/{job['id']}/frames/..%2F..%2Fetc", headers=staff).status_code in (404, 422)  # traversal rejected
 
     # publish p95 into the crowd pipeline, labelled as a recorded-video source
     loc = locations["GHAT-GOWTHAMI"]
@@ -183,3 +183,132 @@ def test_detection_mode_validation_and_tiling_helpers(client, staff, stub_detect
     assert a == [1, 2] and b == [1, 3] and t.seen == {1, 2, 3}
     h = client.get("/api/v1/crowd/video/health", headers=staff).json()
     assert h["tiling"]["tile_px"] > 0 and "output_video" in h
+
+
+def test_cancel_running_then_delete_and_no_id_reuse(client, staff, tmp_path, monkeypatch, stub_detector):
+    """Cancel is row-scoped: running -> cancelling -> cancelled at the next frame; delete is refused while
+    running; a deleted id is never handed to a new upload (so no stale cancel can hit it)."""
+    gate = {"n": 0}
+
+    def slow(frame, conf, mode="standard", model_path=None):
+        gate["n"] += 1
+        time.sleep(0.15)
+        return [[1.0, 2.0, 20.0, 40.0, 0.9]]
+
+    monkeypatch.setattr(va, "detect_persons", slow)
+    path = str(tmp_path / "long.mp4")
+    _synthetic_video(path, frames=200, fps=10.0)
+    with open(path, "rb") as fh:
+        job = client.post("/api/v1/crowd/video/analyses", files={"file": ("long.mp4", fh, "video/mp4")}, data={"sample_fps": "10"}, headers=staff).json()
+    t0 = time.time()
+    while client.get(f"/api/v1/crowd/video/analyses/{job['id']}", headers=staff).json()["frames_processed"] < 2:
+        assert time.time() - t0 < 30
+        time.sleep(0.05)
+    assert client.delete(f"/api/v1/crowd/video/analyses/{job['id']}", headers=staff).status_code == 409
+    r = client.post(f"/api/v1/crowd/video/analyses/{job['id']}/cancel", headers=staff)
+    assert r.status_code == 200 and r.json()["status"] in ("cancelling", "cancelled")
+    j = _wait(client, staff, job["id"])
+    assert j["status"] == "cancelled" and j["frames_processed"] < 200
+    assert not (va.job_dir(job["id"]) / "output.mp4").exists()  # partial video removed
+    assert client.delete(f"/api/v1/crowd/video/analyses/{job['id']}", headers=staff).status_code == 204
+    with open(path, "rb") as fh:
+        nxt = client.post("/api/v1/crowd/video/analyses", files={"file": ("short.mp4", fh, "video/mp4")}, data={"sample_fps": "1"}, headers=staff).json()
+    assert nxt["id"] > job["id"]
+    monkeypatch.setattr(va, "detect_persons", lambda *a, **k: [])
+    assert _wait(client, staff, nxt["id"])["status"] == "done"
+
+
+def test_cancel_queued_job_never_runs(client, staff, tmp_path, monkeypatch, stub_detector):
+    path = str(tmp_path / "q.mp4")
+    _synthetic_video(path, frames=20, fps=10.0)
+    monkeypatch.setattr(va, "submit", lambda job_id: None)  # keep it queued
+    with open(path, "rb") as fh:
+        job = client.post("/api/v1/crowd/video/analyses", files={"file": ("q.mp4", fh, "video/mp4")}, headers=staff).json()
+    r = client.post(f"/api/v1/crowd/video/analyses/{job['id']}/cancel", headers=staff)
+    assert r.json()["status"] == "cancelled"
+    va._run(job["id"])  # a leftover worker task must not resurrect it
+    assert client.get(f"/api/v1/crowd/video/analyses/{job['id']}", headers=staff).json()["status"] == "cancelled"
+
+
+def test_output_cadence_matches_source_duration_and_expected_frames(client, staff, tmp_path, monkeypatch, stub_detector):
+    """50 fps clip: frames written = ceil(n / write_every) so playback length equals the source; frames_expected
+    equals what is actually sampled."""
+    writes = {"n": 0, "fps": None}
+
+    class FakeWriter:
+        def __init__(self, path, w, h, fps):
+            writes["fps"] = fps
+            self.proc = None
+
+        def write(self, img):
+            writes["n"] += 1
+
+        def close(self):
+            pass
+
+        def abort(self):
+            pass
+
+    monkeypatch.setattr(va, "ffmpeg_path", lambda: "ffmpeg")
+    monkeypatch.setattr(va, "FfmpegWriter", FakeWriter)
+    path = str(tmp_path / "pal.mp4")
+    _synthetic_video(path, frames=101, fps=50.0)
+    with open(path, "rb") as fh:
+        job = client.post("/api/v1/crowd/video/analyses", files={"file": ("pal.mp4", fh, "video/mp4")}, data={"sample_fps": "2"}, headers=staff).json()
+    j = _wait(client, staff, job["id"])
+    assert j["status"] == "done", j["error"]
+    assert writes["n"] == 51 and abs(writes["fps"] - 25.0) < 0.01  # 101 frames / 2 at 25 fps = source duration
+    assert j["frames_expected"] == j["frames_processed"] == 5  # frames 0,25,50,75,100
+
+
+def test_tiled_merge_drops_edge_slivers_but_keeps_nested_people():
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("torchvision")
+    boxes = torch.tensor([[1270.0, 100, 1280, 160], [1270.0, 100, 1300, 160], [500.0, 500, 560, 620], [510.0, 540, 540, 600]])
+    scores = torch.tensor([0.9, 0.8, 0.9, 0.7])
+    edge = torch.tensor([True, False, False, False])  # only the clipped sliver touches a tile border
+    b, s = va.merge_tiled(boxes, scores, edge, 0.5, 0.7)
+    kept = sorted(tuple(round(v) for v in x) for x in b.tolist())
+    assert (1270, 100, 1280, 160) not in kept and (1270, 100, 1300, 160) in kept
+    assert len(kept) == 3  # adult + nested child both kept
+
+
+def test_recover_interrupted_marks_running_failed(client, staff, tmp_path, monkeypatch, stub_detector):
+    from app.db import SessionLocal
+    from app.models import VideoAnalysis
+
+    db = SessionLocal()
+    try:
+        row = VideoAnalysis(filename="x.mp4", path=str(tmp_path / "gone.mp4"), status="running")
+        db.add(row)
+        db.commit()
+        rid = row.id
+    finally:
+        db.close()
+    res = va.recover_interrupted()
+    assert res["failed"] >= 1
+    j = client.get(f"/api/v1/crowd/video/analyses/{rid}", headers=staff).json()
+    assert j["status"] == "failed" and "restart" in j["error"]
+
+
+def test_upload_body_limit_rejects_early(client, staff, monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "video_max_mb", 1)
+    big = io.BytesIO(b"0" * (3 * 1024 * 1024))
+    r = client.post("/api/v1/crowd/video/analyses", files={"file": ("big.mp4", big, "video/mp4")}, headers=staff)
+    assert r.status_code == 413
+
+
+def test_media_token_allows_tag_playback_for_one_job_only(client, staff, tmp_path, stub_detector):
+    path = str(tmp_path / "m.mp4")
+    _synthetic_video(path, frames=20, fps=10.0)
+    with open(path, "rb") as fh:
+        job = client.post("/api/v1/crowd/video/analyses", files={"file": ("m.mp4", fh, "video/mp4")}, headers=staff).json()
+    _wait(client, staff, job["id"])
+    assert client.get(f"/api/v1/crowd/video/analyses/{job['id']}/live.jpg").status_code == 401
+    tok = client.post(f"/api/v1/crowd/video/analyses/{job['id']}/media-token", headers=staff).json()["token"]
+    assert client.get(f"/api/v1/crowd/video/analyses/{job['id']}/live.jpg?t={tok}").status_code == 200
+    assert client.get(f"/api/v1/crowd/video/analyses/{job['id'] + 999}/live.jpg?t={tok}").status_code == 404
+    other = client.get(f"/api/v1/crowd/video/analyses/1/live.jpg?t={tok}")
+    assert job["id"] == 1 or other.status_code in (401, 404)

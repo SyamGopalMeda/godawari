@@ -20,7 +20,7 @@ interface Health {
 type Mode = 'auto' | 'standard' | 'tiled'
 interface Job {
   id: number; created_by: number | null; location_id: number | null; filename: string; size_bytes: number
-  status: 'queued' | 'running' | 'done' | 'failed' | 'cancelled'; sample_fps: number; confidence: number; model_name: string | null; device: string | null
+  status: 'queued' | 'running' | 'cancelling' | 'done' | 'failed' | 'cancelled'; sample_fps: number; confidence: number; model_name: string | null; device: string | null
   video_fps: number | null; video_frames: number | null; video_width: number | null; video_height: number | null; video_duration_s: number | null
   frames_expected: number; frames_processed: number; detection_mode: Mode | null; tiles: number | null; last_count: number | null; unique_tracks: number | null
   output_video: boolean; summary: Summary; error: string | null; note: string | null; published_reading_id: number | null
@@ -33,7 +33,8 @@ interface Summary {
 }
 interface Frame { index: number; frame: number; t: number; count: number; unique_so_far?: number; infer_ms: number; image?: string; detections: number }
 
-const STATUS_CLS: Record<Job['status'], string> = { queued: 'neutral', running: 'brand', done: 'low', failed: 'critical', cancelled: 'unknown' }
+const STATUS_CLS: Record<Job['status'], string> = { queued: 'neutral', running: 'brand', cancelling: 'moderate', done: 'low', failed: 'critical', cancelled: 'unknown' }
+const isActive = (st: Job['status']) => st === 'queued' || st === 'running' || st === 'cancelling'
 const fmtBytes = (b: number) => (b > 1e6 ? `${(b / 1e6).toFixed(1)} MB` : `${Math.round(b / 1e3)} kB`)
 const authHeaders = () => ({ Authorization: `Bearer ${getToken() ?? ''}` })
 const download = (path: string, filename: string) => fetch(API + path, { headers: authHeaders() }).then((r) => r.blob()).then((b) => { const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; a.click(); URL.revokeObjectURL(u) })
@@ -48,7 +49,7 @@ function useAuthUrl(path: string | null, refreshKey = 0) {
     let alive = true
     let obj: string | null = null
     setError(null)
-    fetch(API + path, { headers: authHeaders(), cache: 'no-store' })
+    fetch(API + path, { headers: authHeaders(), cache: refreshKey ? 'no-store' : 'default' })
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((b) => { if (alive) { obj = URL.createObjectURL(b); setUrl(obj) } })
       .catch((e) => { if (alive) setError((e as Error).message) })
@@ -57,34 +58,65 @@ function useAuthUrl(path: string | null, refreshKey = 0) {
   return { url, error }
 }
 
+/** Job-scoped short-lived token so <video> can stream (Range requests) without a bearer header. */
+function useMediaToken(jobId: number | null) {
+  const [tok, setTok] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    setTok(null); setError(null)
+    if (jobId == null) return
+    let alive = true
+    api.post<{ token: string }>(`/crowd/video/analyses/${jobId}/media-token`).then((r) => { if (alive) setTok(r.token) }).catch((e) => { if (alive) setError((e as Error).message) })
+    return () => { alive = false }
+  }, [jobId])
+  return { tok, error }
+}
+
 function AuthImage({ src, alt, style, onClick, refreshKey }: { src: string; alt: string; style?: React.CSSProperties; onClick?: () => void; refreshKey?: number }) {
   const { url } = useAuthUrl(src, refreshKey)
-  const last = useRef<string | null>(null)
-  if (url) last.current = url
+  // keep showing the previous frame while the next one loads (live preview), but never a frame of another image
+  const last = useRef<{ src: string; url: string } | null>(null)
+  if (url) last.current = { src, url }
+  else if (last.current && last.current.src !== src) last.current = null
   if (!last.current) return <div className="skel" style={{ ...style, minHeight: 90 }} aria-busy="true" />
-  return <img src={last.current} alt={alt} style={{ ...style, cursor: onClick ? 'zoom-in' : undefined, display: 'block' }} onClick={onClick} />
+  return <img src={last.current.url} alt={alt} style={{ ...style, cursor: onClick ? 'zoom-in' : undefined, display: 'block' }} onClick={onClick} />
 }
 
 /** Count-over-time chart (inline SVG). `cursor` = playback time; click/drag seeks. */
 function CountChart({ frames, peak, cursor, onSeek }: { frames: Frame[]; peak?: number; cursor?: number | null; onSeek?: (t: number) => void }) {
   const ref = useRef<SVGSVGElement>(null)
+  const drag = useRef<{ id: number; x: number; y: number; armed: boolean } | null>(null)
   if (frames.length < 2) return null
   const W = 720, H = 200, px = 44, py = 18
   const maxC = Math.max(1, ...frames.map((f) => f.count))
-  const maxT = frames[frames.length - 1].t || 1
+  const maxT = Math.max(frames[frames.length - 1].t, 0.001)
   const x = (t: number) => px + (t / maxT) * (W - px - 12)
   const y = (c: number) => H - py - (c / maxC) * (H - 2 * py)
   const d = frames.map((f, i) => `${i ? 'L' : 'M'}${x(f.t).toFixed(1)},${y(f.count).toFixed(1)}`).join(' ')
   const ticks = [0, Math.round(maxC / 2), maxC]
-  const seek = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (!onSeek || !ref.current || (e.type === 'pointermove' && e.buttons !== 1)) return
-    const r = ref.current.getBoundingClientRect()
-    const t = ((e.clientX - r.left) / r.width * W - px) / (W - px - 12) * maxT
-    onSeek(Math.max(0, Math.min(maxT, t)))
+  const tAt = (clientX: number) => {
+    const r = ref.current!.getBoundingClientRect()
+    return Math.max(0, Math.min(maxT, ((clientX - r.left) / r.width * W - px) / (W - px - 12) * maxT))
+  }
+  const onDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    if (!onSeek || !ref.current) return
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, armed: e.pointerType === 'mouse' }
+    if (e.pointerType === 'mouse') { ref.current.setPointerCapture?.(e.pointerId); onSeek(tAt(e.clientX)) }
+  }
+  const onMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const dr = drag.current
+    if (!dr || !onSeek || e.pointerId !== dr.id) return
+    if (!dr.armed) { const dx = Math.abs(e.clientX - dr.x), dy = Math.abs(e.clientY - dr.y); if (dx < 10 || dx <= dy) return; dr.armed = true }
+    onSeek(tAt(e.clientX))
+  }
+  const onUp = (e: React.PointerEvent<SVGSVGElement>) => {
+    const dr = drag.current
+    drag.current = null
+    if (dr && onSeek && !dr.armed && Math.abs(e.clientX - dr.x) < 10 && Math.abs(e.clientY - dr.y) < 10) onSeek(tAt(e.clientX))
   }
   const cur = cursor != null ? frames.reduce((a, f) => (f.t <= cursor ? f : a), frames[0]) : null
   return (
-    <svg ref={ref} viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', cursor: onSeek ? 'pointer' : undefined, touchAction: 'none' }} role="img" aria-label="People detected per sampled frame" onPointerDown={seek} onPointerMove={seek}>
+    <svg ref={ref} viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', cursor: onSeek ? 'pointer' : undefined, touchAction: 'pan-y' }} role="img" aria-label="People detected per sampled frame; tap or drag sideways to seek" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null }}>
       {ticks.map((c) => <g key={c}><line x1={px} x2={W - 12} y1={y(c)} y2={y(c)} stroke="var(--line)" /><text x={px - 6} y={y(c) + 4} textAnchor="end" fontSize="11" fill="var(--muted)">{c}</text></g>)}
       <path d={`${d} L${x(frames[frames.length - 1].t).toFixed(1)},${y(0)} L${x(0)},${y(0)} Z`} fill="var(--brand-100)" />
       <path d={d} fill="none" stroke="var(--brand-700)" strokeWidth="2" />
@@ -110,7 +142,7 @@ function LiveRun({ job }: { job: Job }) {
   const portrait = (job.video_height ?? 0) > (job.video_width ?? 1)
   return (
     <div className="card">
-      <div className="card-head"><h2><Radio size={18} aria-hidden style={{ verticalAlign: '-3px' }} className="spin-icon" /> Live analysis</h2><span className="chip brand">running · {pct}%</span></div>
+      <div className="card-head"><h2><Radio size={18} aria-hidden style={{ verticalAlign: '-3px' }} className="spin-icon" /> Live analysis</h2>{job.status === 'cancelling' ? <span className="chip moderate">stopping…</span> : <span className="chip brand">running · {pct}%</span>}</div>
       <div className="layout-split media" style={{ '--split-cols': portrait ? 'minmax(0, 360px) minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(220px, 300px)' } as React.CSSProperties}>
         <div style={{ background: '#0b1220', borderRadius: 'var(--r-md)', overflow: 'hidden', border: '1px solid var(--line)', minHeight: 180 }}>
           {job.frames_processed > 0
@@ -120,7 +152,7 @@ function LiveRun({ job }: { job: Job }) {
         <div className="stack">
           <div className="kpi" style={{ padding: 16 }}><div className="v" style={{ fontSize: 44 }}>{job.last_count ?? '–'}</div><div className="l">People in the latest frame</div></div>
           <div className="kpi"><div className="v">{job.unique_tracks ?? '–'}</div><div className="l">Distinct people tracked so far (approx.)</div></div>
-          <div className="kpi"><div className="v">{job.frames_processed}<span className="muted" style={{ fontSize: 14 }}> / {job.frames_expected}</span></div><div className="l">Frames analysed at {job.sample_fps}/s</div></div>
+          <div className="kpi"><div className="v">{Math.min(job.frames_processed, job.frames_expected)}<span className="muted" style={{ fontSize: 14 }}> / {job.frames_expected}</span></div><div className="l">Frames analysed at {job.sample_fps}/s</div></div>
           <div className="meter"><span className="low" style={{ width: `${Math.max(3, pct)}%` }} /></div>
           <span className="muted xs">{modeLabel(job.detection_mode, job.tiles)} · {job.device}</span>
         </div>
@@ -130,17 +162,20 @@ function LiveRun({ job }: { job: Job }) {
 }
 
 /** Finished job: annotated video player with the count synced to playback, or a frame scrubber when no video was encoded. */
-function Playback({ job, frames, onZoom }: { job: Job; frames: Frame[]; onZoom: (f: Frame) => void }) {
+function Playback({ job, frames, onZoom, ffmpeg }: { job: Job; frames: Frame[]; onZoom: (f: Frame) => void; ffmpeg: boolean | undefined }) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const { url, error } = useAuthUrl(job.output_video ? `/crowd/video/analyses/${job.id}/video` : null)
+  const media = useMediaToken(job.output_video ? job.id : null)
+  const url = media.tok ? `${API}/crowd/video/analyses/${job.id}/video?t=${encodeURIComponent(media.tok)}` : null
+  const error = media.error
   const [t, setT] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const [scrub, setScrub] = useState(0)
   const cur = useMemo(() => frames.reduce((a, f) => (f.t <= t ? f : a), frames[0]), [frames, t])
   const seek = (to: number) => { if (videoRef.current) { videoRef.current.currentTime = to } setT(to) }
   const toggle = () => { const v = videoRef.current; if (!v) return; if (v.paused) void v.play(); else v.pause() }
   const portrait = (job.video_height ?? 0) > (job.video_width ?? 1)
   const stills = frames.filter((f) => f.image)
+  const stillIdx = stills.reduce((a, f, i) => (f.t <= t ? i : a), 0)
+  const still = stills[stillIdx]
   const s = job.summary
   const readout = (count: number | undefined, unique: number | undefined, at: number) => (
     <div className="stack">
@@ -174,15 +209,16 @@ function Playback({ job, frames, onZoom }: { job: Job; frames: Frame[]; onZoom: 
       ) : (
         <div className="layout-split media" style={{ '--split-cols': portrait ? 'minmax(0, 420px) minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(220px, 300px)' } as React.CSSProperties}>
           <div>
-            <Notice tone="warn">No annotated video was encoded on the server (ffmpeg not available), so this scrubber steps through the annotated stills instead.</Notice>
-            {stills.length > 0 && (
+            <Notice tone="warn">{ffmpeg ? 'This analysis has no annotated video (it was run before the tracking video existed, or encoding failed). Re-upload the clip to get one.' : 'No annotated video was encoded on this server (ffmpeg not available).'} The scrubber steps through the annotated stills instead.</Notice>
+            {still && (
               <>
-                <AuthImage src={`/crowd/video/analyses/${job.id}/frames/${stills[Math.min(scrub, stills.length - 1)].image}`} alt="Annotated frame" style={{ width: '100%', height: 'auto', borderRadius: 'var(--r-md)', border: '1px solid var(--line)', marginTop: 8 }} onClick={() => onZoom(stills[Math.min(scrub, stills.length - 1)])} />
-                <input className="input" type="range" min={0} max={stills.length - 1} value={Math.min(scrub, stills.length - 1)} onChange={(e) => { const i = Number(e.target.value); setScrub(i); setT(stills[i].t) }} style={{ padding: 0, minHeight: 44 }} aria-label="Scrub annotated frames" />
+                <AuthImage src={`/crowd/video/analyses/${job.id}/frames/${still.image}`} alt={`Annotated frame at ${still.t.toFixed(1)} s`} style={{ width: '100%', height: 'auto', borderRadius: 'var(--r-md)', border: '1px solid var(--line)', marginTop: 8 }} onClick={() => onZoom(still)} />
+                <div className="muted xs" style={{ marginTop: 4 }}>Annotated still at {still.t.toFixed(1)} s</div>
+                <input className="input" type="range" min={0} max={stills.length - 1} value={stillIdx} onChange={(e) => setT(stills[Number(e.target.value)].t)} style={{ padding: 0, minHeight: 44 }} aria-label="Scrub annotated frames" />
               </>
             )}
           </div>
-          {readout(stills[Math.min(scrub, stills.length - 1)]?.count, stills[Math.min(scrub, stills.length - 1)]?.unique_so_far, t)}
+          {readout(cur?.count, cur?.unique_so_far, t)}
         </div>
       )}
       <h3 style={{ margin: '16px 0 8px' }}>People per sampled frame</h3>
@@ -199,6 +235,7 @@ export default function VideoAnalysisAdminPage() {
   const [health, setHealth] = useState<Health | null>(null)
   const [healthErr, setHealthErr] = useState<string | null>(null)
   const [jobs, setJobs] = useState<Job[] | null>(null)
+  const [jobsErr, setJobsErr] = useState<string | null>(null)
   const [openId, setOpenId] = useState<number | null>(null)
   const [frames, setFrames] = useState<Frame[] | null>(null)
   const [zoom, setZoom] = useState<Frame | null>(null)
@@ -219,14 +256,14 @@ export default function VideoAnalysisAdminPage() {
   const monitored = useMemo(() => places.filter((p) => p.monitored || p.type === 'ghat' || p.type === 'gate'), [places])
   const locById = useCallback((id: number | null) => (id ? places.find((p) => p.id === id) ?? null : null), [places])
 
-  const loadJobs = useCallback(() => api.get<Job[]>('/crowd/video/analyses').then(setJobs).catch((e) => { setJobs([]); setHealthErr((e as Error).message) }), [])
+  const loadJobs = useCallback(() => api.get<Job[]>('/crowd/video/analyses').then((r) => { setJobs(r); setJobsErr(null) }).catch((e) => setJobsErr((e as Error).message)), [])
   useEffect(() => {
     api.get<Health>('/crowd/video/health').then(setHealth).catch((e) => setHealthErr((e as Error).message))
     void loadJobs()
   }, [loadJobs])
 
   // poll while anything is queued/running
-  const active = jobs?.some((j) => j.status === 'queued' || j.status === 'running') ?? false
+  const active = jobs?.some((j) => isActive(j.status)) ?? false
   useEffect(() => {
     if (!active) return
     const id = window.setInterval(() => void loadJobs(), 1000)
@@ -260,8 +297,17 @@ export default function VideoAnalysisAdminPage() {
       setOpenId(job.id)
     }
   }
-  const cancel = (j: Job) => act.run(() => api.post(`/crowd/video/analyses/${j.id}/cancel`)).then(() => void loadJobs())
-  const remove = (j: Job) => act.run(() => api.del(`/crowd/video/analyses/${j.id}`)).then(() => { if (openId === j.id) setOpenId(null); void loadJobs() })
+  const cancel = async (j: Job) => {
+    const ok = await act.run(async () => { await api.post(`/crowd/video/analyses/${j.id}/cancel`); return true })
+    if (ok) { toast(j.status === 'running' ? 'Stopping at the next analysed frame' : 'Cancelled'); void loadJobs() }
+  }
+  const remove = async (j: Job) => {
+    const ok = await act.run(async () => { await api.del(`/crowd/video/analyses/${j.id}`); return true })
+    if (!ok) return
+    if (openId === j.id) setOpenId(null)
+    toast('Analysis deleted')
+    void loadJobs()
+  }
   const publish = async () => {
     if (!open || !pubLoc) return
     const r = await act.run(() => api.post<Job>(`/crowd/video/analyses/${open.id}/publish`, { location_id: Number(pubLoc), statistic: pubStat, note: 'Pipeline verification from recorded video' }))
@@ -282,15 +328,16 @@ export default function VideoAnalysisAdminPage() {
   const jobList = (
     <div className="card">
       <div className="card-head"><h2><FileVideo size={18} aria-hidden style={{ verticalAlign: '-3px' }} /> Analyses</h2><span className="muted small">{jobs ? `${jobs.length} total` : ''}</span></div>
-      {!jobs && <Skeleton rows={3} />}
-      {jobs && jobs.length === 0 && <EmptyState icon={FileVideo} title="No videos analysed yet" body="Upload a recorded clip from a ghat or gate camera to check that people are detected, tracked and counted correctly." />}
+      {jobsErr && <ErrorState message={`${jobsErr}${jobs?.length ? ' · showing the last known state, retrying' : ''}`} onRetry={() => void loadJobs()} />}
+      {!jobs && !jobsErr && <Skeleton rows={3} />}
+      {jobs && jobs.length === 0 && !jobsErr && <EmptyState icon={FileVideo} title="No videos analysed yet" body="Upload a recorded clip from a ghat or gate camera to check that people are detected, tracked and counted correctly." />}
       {jobs && jobs.length > 0 && (
         <div className="list" style={{ gap: 6 }}>
           {jobs.map((j) => {
             const pct = j.frames_expected ? Math.min(100, Math.round((j.frames_processed / j.frames_expected) * 100)) : 0
             return (
               <button key={j.id} type="button" className="lrow" onClick={() => setOpenId(j.id)} style={openId === j.id ? { borderColor: 'var(--brand-500)', background: 'var(--brand-50)' } : undefined}>
-                <span className={`lead ${j.status === 'failed' ? 'danger' : ''}`} aria-hidden>{j.status === 'running' ? <Activity size={20} className="spin-icon" /> : j.status === 'done' ? <CircleCheck size={20} /> : j.status === 'failed' ? <CircleAlert size={20} /> : <FileVideo size={20} />}</span>
+                <span className={`lead ${j.status === 'failed' ? 'danger' : ''}`} aria-hidden>{j.status === 'running' || j.status === 'cancelling' ? <Activity size={20} className="spin-icon" /> : j.status === 'done' ? <CircleCheck size={20} /> : j.status === 'failed' ? <CircleAlert size={20} /> : <FileVideo size={20} />}</span>
                 <span className="body">
                   <span className="title" style={{ overflowWrap: 'anywhere' }}>{j.filename}</span>
                   <span className="meta">
@@ -321,13 +368,15 @@ export default function VideoAnalysisAdminPage() {
           </div>
           <div className="row" style={{ gap: 6 }}>
             {(open.status === 'queued' || open.status === 'running') && <button className="btn sm" onClick={() => void cancel(open)} disabled={act.busy}><Square size={14} aria-hidden />Cancel</button>}
-            <button className="btn sm danger-outline" onClick={() => void remove(open)} disabled={act.busy} aria-label="Delete analysis"><Trash2 size={14} aria-hidden />Delete</button>
+            <button className="btn sm danger-outline" onClick={() => void remove(open)} disabled={act.busy || open.status === 'running' || open.status === 'cancelling'} title={open.status === 'running' ? 'Cancel the analysis before deleting it' : undefined} aria-label="Delete analysis"><Trash2 size={14} aria-hidden />Delete</button>
             <button className="btn icon sm ghost" onClick={() => setOpenId(null)} aria-label="Close"><X size={18} aria-hidden /></button>
           </div>
         </div>
         {open.status === 'queued' && <Notice>Waiting for the detector (one video is processed at a time).</Notice>}
         {open.status === 'failed' && <Notice tone="danger" icon={CircleAlert}>Analysis failed: {open.error}</Notice>}
         {open.status === 'cancelled' && <Notice tone="warn">Cancelled before completion.</Notice>}
+        {open.status === 'cancelling' && <Notice tone="warn">Stopping at the next analysed frame…</Notice>}
+        {act.error && !pubConfirm && <ErrorState message={act.error} />}
         {open.status === 'running' && <span className="muted small">Analysing {open.frames_processed} of {open.frames_expected} sampled frames · {modeLabel(open.detection_mode, open.tiles)} · {open.device}</span>}
         {open.status === 'done' && (
           <>
@@ -351,9 +400,9 @@ export default function VideoAnalysisAdminPage() {
         )}
       </div>
 
-      {open.status === 'running' && <LiveRun job={open} />}
+      {(open.status === 'running' || open.status === 'cancelling') && <LiveRun job={open} />}
 
-      {open.status === 'done' && (frames ? <Playback job={open} frames={frames} onZoom={setZoom} /> : <div className="card"><Skeleton rows={4} /></div>)}
+      {open.status === 'done' && (frames ? <Playback job={open} frames={frames} onZoom={setZoom} ffmpeg={health?.output_video} /> : <div className="card"><Skeleton rows={4} /></div>)}
 
       {open.status === 'done' && frames && frames.some((f) => f.image) && (
         <div className="card">
@@ -393,8 +442,8 @@ export default function VideoAnalysisAdminPage() {
           <div className="card-head"><h2><Send size={18} aria-hidden style={{ verticalAlign: '-3px' }} /> Send through the crowd pipeline</h2></div>
           <p className="small muted" style={{ marginBottom: 12 }}>Posts the chosen statistic as a crowd reading with source <strong>video</strong>, exactly as a live camera device would. Pilgrims will see it as a recorded-video verification, never as a live feed. Use a test location or clear it afterwards with a staff reading.</p>
           <div className="cols-2" style={{ gap: 12 }}>
-            <Field label="Location"><select className="input" value={pubLoc} onChange={(e) => setPubLoc(e.target.value)}><option value="">Choose a ghat or gate</option>{monitored.map((p) => <option key={p.id} value={p.id}>{name(p)}{p.capacity ? ` (capacity ${num(p.capacity)})` : ' (no capacity set)'}</option>)}</select></Field>
-            <Field label="Statistic"><select className="input" value={pubStat} onChange={(e) => setPubStat(e.target.value as typeof pubStat)}><option value="p95">95th percentile ({s.count_p95})</option><option value="max">Peak ({s.count_max})</option><option value="mean">Mean ({s.count_mean})</option><option value="median">Median ({s.count_median})</option></select></Field>
+            <Field label="Location" htmlFor="v-pub-loc"><select id="v-pub-loc" className="input" value={pubLoc} onChange={(e) => setPubLoc(e.target.value)}><option value="">Choose a ghat or gate</option>{monitored.map((p) => <option key={p.id} value={p.id}>{name(p)}{p.capacity ? ` (capacity ${num(p.capacity)})` : ' (no capacity set)'}</option>)}</select></Field>
+            <Field label="Statistic" htmlFor="v-pub-stat"><select id="v-pub-stat" className="input" value={pubStat} onChange={(e) => setPubStat(e.target.value as typeof pubStat)}><option value="p95">95th percentile ({s.count_p95})</option><option value="max">Peak ({s.count_max})</option><option value="mean">Mean ({s.count_mean})</option><option value="median">Median ({s.count_median})</option></select></Field>
           </div>
           {pubTarget && !pubTarget.capacity && <div style={{ marginTop: 10 }}><Notice tone="warn">This location has no safe capacity set, so the level will show as "No recent data" even with a count. Set the capacity in Locations to see a level.</Notice></div>}
           {!pubConfirm
@@ -436,14 +485,14 @@ export default function VideoAnalysisAdminPage() {
               <input id="vfile" ref={fileRef} className="input" type="file" accept="video/*,.mp4,.mov,.avi,.mkv,.webm" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
             </Field>
             <div className="cols-2" style={{ gap: 12 }}>
-              <Field label="Sample rate" hint="Frames analysed per second of video (higher = smoother tracking, slower)"><select className="input" value={fps} onChange={(e) => setFps(e.target.value)}><option value="0.5">0.5 / s (fast)</option><option value="1">1 / s</option><option value="2">2 / s (default)</option><option value="5">5 / s (smooth tracking)</option><option value="10">10 / s (very slow on 4K)</option></select></Field>
-              <Field label="Detail" hint="Tiled: native-resolution tiles for dense, aerial or 4K footage"><select className="input" value={mode} onChange={(e) => setMode(e.target.value as Mode)}><option value="auto">Auto (tiled from {health?.tiling?.auto_min_px ?? 1600} px)</option><option value="tiled">Tiled (native resolution)</option><option value="standard">Standard (one 640 px pass)</option></select></Field>
+              <Field label="Sample rate" hint="Frames analysed per second of video (higher = smoother tracking, slower)" htmlFor="v-fps"><select id="v-fps" className="input" value={fps} onChange={(e) => setFps(e.target.value)}><option value="0.5">0.5 / s (fast)</option><option value="1">1 / s</option><option value="2">2 / s (default)</option><option value="5">5 / s (smooth tracking)</option><option value="10">10 / s (very slow on 4K)</option></select></Field>
+              <Field label="Detail" hint="Tiled: native-resolution tiles for dense, aerial or 4K footage" htmlFor="v-mode"><select id="v-mode" className="input" value={mode} onChange={(e) => setMode(e.target.value as Mode)}><option value="auto">Auto (tiled from {health?.tiling?.auto_min_px ?? 1600} px)</option><option value="tiled">Tiled (native resolution)</option><option value="standard">Standard (one 640 px pass)</option></select></Field>
             </div>
             <div className="cols-2" style={{ gap: 12 }}>
-              <Field label={`Confidence threshold: ${conf.toFixed(2)}`} hint="Lower = more detections, more false positives"><input className="input" type="range" min={0.1} max={0.8} step={0.05} value={conf} onChange={(e) => setConf(Number(e.target.value))} style={{ padding: 0, minHeight: 44 }} /></Field>
-              <Field label="Location (optional)" hint="Where the clip was recorded"><select className="input" value={locId} onChange={(e) => setLocId(e.target.value)}><option value="">Not linked</option>{monitored.map((p) => <option key={p.id} value={p.id}>{name(p)}</option>)}</select></Field>
+              <Field label={`Confidence threshold: ${conf.toFixed(2)}`} hint="Lower = more detections, more false positives" htmlFor="v-conf"><input id="v-conf" className="input" type="range" min={0.1} max={0.8} step={0.05} value={conf} onChange={(e) => setConf(Number(e.target.value))} style={{ padding: 0, minHeight: 44 }} /></Field>
+              <Field label="Location (optional)" hint="Where the clip was recorded" htmlFor="v-loc"><select id="v-loc" className="input" value={locId} onChange={(e) => setLocId(e.target.value)}><option value="">Not linked</option>{monitored.map((p) => <option key={p.id} value={p.id}>{name(p)}</option>)}</select></Field>
             </div>
-            <Field label="Note (optional)"><input className="input" value={note} maxLength={255} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Gate B camera, evening test" /></Field>
+            <Field label="Note (optional)" htmlFor="v-note"><input id="v-note" className="input" value={note} maxLength={255} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Gate B camera, evening test" /></Field>
             {upload.error && <ErrorState message={upload.error} />}
             <SubmitButton className="btn primary" busy={upload.busy} disabled={!file || !health?.available} onClick={() => void doUpload()}><Play size={16} aria-hidden />{upload.busy ? 'Uploading…' : 'Upload and count people'}</SubmitButton>
             {file && <span className="muted xs">{file.name} · {fmtBytes(file.size)}</span>}

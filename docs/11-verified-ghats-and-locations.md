@@ -124,7 +124,7 @@ Production Docker build with `PUSHKAR_SEED_MODE=real` (PostgreSQL, Nginx). The m
 |---|---|
 | English at 390×844, 768×1024, 1440×900 (25 screens + offline) | **76 / 76 clean** |
 | Telugu at 360×780 | **26 / 26 clean** |
-| Backend tests (63, incl. 9 for the dataset, provenance and verification workflow) | **passed** |
+| Backend tests (63 at the time of this run, incl. 9 for the dataset, provenance and verification workflow; 71 after the video tracking work) | **passed** |
 | Frontend integration tests (34) | **passed** |
 | Live walking route (Rajamahendravaram → Pushkar Ghat, OSRM) | 1.9 km, 18 steps, provider `osrm` |
 
